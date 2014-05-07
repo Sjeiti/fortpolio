@@ -1,0 +1,28 @@
+{
+  "name": "Fortpolio",
+  "version": "0.4.92",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.6.2",
+    "grunt-contrib-less": "~0.8.3",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-include-file": "~0.1.1",
+    "grunt-version-git": "~0.1.5",
+    "load-grunt-tasks": "~0.4.0"
+  },
+  "description": "...",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "uglify-js": "~2.3.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sjeiti/iddqd.git"
+  },
+  "keywords": [],
+  "author": "Ron Valstar (http://www.sjeiti.com/)"
+}

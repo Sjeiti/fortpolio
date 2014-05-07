@@ -1,0 +1,175 @@
+@import 'elements.less';
+
+// mixins
+.basicAnchorButton() {
+	padding: 2px 5px;
+	margin: 0 6px 2px 0;
+	text-decoration: none;
+	// todo: fix below
+	background-color: #EEE;
+	background-image: -moz-linear-gradient(center bottom , #E3E3E3, #FFF);
+	border: 1px solid #C3C3C3;
+	border-radius: 3px 3px 3px 3px;
+	color: #464646;
+	&:hover { background-image: -moz-linear-gradient(center bottom, #DDD, #E3E3E3); }
+}
+
+// settings page // todo: move to own sheet (since it's applicable to wp_sjeiti.php)
+body.settings_page_fortpolio {
+    div.wp-fortpolio-settings {
+		form h3 { margin-top: 40px; }
+		div.postbox-container.main {
+			p { padding: 0 20% 0 12px; }
+			td { position: relative; }
+			span.description {
+			    @hideSize: 18px;
+				&.hide {
+					//.transition();
+				    display: inline-block;
+				    width: @hideSize;
+					height: @hideSize;
+					position: relative;
+					top: 0px;
+					left: 14px;
+					overflow: hidden;
+					vertical-align: top;
+					&:before {
+					    .shadowBox(-1px -2px 8px rgba(33,117,155,.5) inset);
+					    content: '? ';
+						display: inline-block;
+						width: @hideSize;
+						height: @hideSize;
+						/*padding-top: -8px;*/
+						font-weight: bold;
+						font-style: normal;
+						text-align: center;
+						font-size: 11px;
+						/*color: black;*/
+						/*color: white;*/
+						color: #21759B;
+						background-color: #EAF2FA;
+						.cornerRounded(@hideSize/2);
+				    }
+					&:hover {
+						//.transition();
+					    /*position: absolute;*/
+					    /*position: absolute;*/
+				   		/*display: inline;*/
+						width: 80%;
+						height: auto;
+						z-index: 300;
+						overflow: inherit;
+						/*background-color: #EEE;*/
+						&:before { display: none; }
+					}
+				}
+			}
+		}
+		.settings-array {
+			table {
+				margin: 0;
+				padding: 0;
+				border-collapse:collapse;
+				border-spacing: 0;
+				border: 1px solid #EEE;
+				thead {
+					background: #EEE;
+					font-weight: bold;
+				}
+				tr {
+					th,td {
+						padding: 1px 8px;
+						font-size: 11px;
+						white-space: nowrap;
+					}
+					&:nth-child(2n+0) { background: #F5FDFF; }
+				}
+				tfoot { background: #EEE; }
+				button.dashicons {
+					padding: 0;
+					border: 0;
+					background-color: transparent;
+				}
+			}
+		}
+    }
+}
+
+
+// menu icon
+//#adminmenu #menu-posts-fortpolio {
+//	.wp-menu-image { background: transparent url('book-brown.png') 6px -17px no-repeat; }
+//	&:hover, &.wp-menu-open { .wp-menu-image { background-position: 6px 7px; } }
+//}
+
+#fortpolio-media {
+	a.thickbox {
+	    .basicAnchorButton();
+	}
+	#jsonData {
+	    margin: 10px 0;
+	    padding: 2px;
+	    background: #FEE;
+		font: 12px/16px monospace;
+	}
+}
+#fortpolio-media-table {
+    tr {
+		.row-actions a {
+		    cursor: pointer;
+			&:before { content: ' | '; }
+			&:first-child:before { content: ''; }
+	    }
+	 	td.type div {
+	 	    width: 16px;
+	 		height: 20px;
+			margin: 8px 0 0 8px;
+			background-position: 0 -24px;
+			background-repeat: no-repeat;
+			&.image { background-image: url('../../style/image.png'); }
+			&.video { background-image: url('../../style/film.png'); }
+			&.audio { background-image: url('../../style/music-beam-16.png'); }
+			&.file  { background-image: url('../../style/document.png'); }
+			&.vimeo { background-image: url('../../style/vimeo.png'); }
+	 	}
+		&:hover td.type div { background-position: 0 0px; }
+		td.medium {
+			img { max-height: 36px; }
+			video {
+			    background-color: #EEE;
+			    max-height: 36px;
+		    }
+		}
+	 	td.addMedia {
+	 	    white-space: nowrap;
+	 	    a { display: none; }
+	 	}
+		&.type-vimeo .row-actions a {
+			&.edit { display: none; }
+			&:nth-child(2):before { content: ''; }
+		}
+    	&.type-video td.addMedia a {
+    	    .basicAnchorButton();
+    	 	display: inline-block;
+    		margin-top: 5px;
+    		span {
+    		    padding: 4px 8px;
+				background-image: url(../../style/cross.png);
+				background-repeat: no-repeat;
+				background-position: 2px -20px;
+    		}
+    		&:hover span { background-position: 2px 4px; }
+    		&.added span { background-image: url(../../style/tick.png); }
+		}
+    }
+}
+
+// options
+ #fortpolio_thumbw
+,#fortpolio_thumbh
+,#fortpolio_imagew
+,#fortpolio_imageh
+,#fortpolio_posterw
+,#fortpolio_posterh{
+	width: 60px;
+}

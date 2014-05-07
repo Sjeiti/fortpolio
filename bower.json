@@ -1,0 +1,22 @@
+{
+  "name": "fortpolio",
+  "version": "0.0.0",
+  "authors": [
+    "Ron Valstar <sjeiti@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "iddqd": "https://github.com/Sjeiti/iddqd.git",
+    "zen": "https://github.com/Sjeiti/zen.git",
+    "es5-shim": "https://github.com/es-shims/es5-shim.git#~2.3.0"
+  }
+}

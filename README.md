@@ -1,2 +1,3 @@
-fortpolio
-=========
+# Fortpolio
+
+* [Project setup](#project-setup)
