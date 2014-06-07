@@ -38,9 +38,9 @@ iddqd.ns('fortpolio.admin.edit',(function($){
 						$Input.prop('checked', true);
 					}
 				} // todo: else ajax call
-				console.log('$Input',$Input.attr('id'),sMetaId); // log
+				//console.log('$Input',$Input.attr('id'),sMetaId); // log
 			});
-			console.log('editline',oValues); // log
+			//console.log('editline',oValues); // log
 		});
 
 

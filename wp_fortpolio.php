@@ -79,6 +79,7 @@ function addHooks() {
 	add_filter( 'manage_edit-fortpolio_columns', array(&$this,'editCptColumns') ) ;
 	add_action( 'manage_fortpolio_posts_custom_column', array(&$this,'manageCptColumns'), 10, 2 );
 	// see: http://www.ilovecolors.com.ar/saving-custom-fields-quick-bulk-edit-wordpress/
+	//add_action('bulk_edit_custom_box', array(&$this,'quickEditCustomBox'), 10, 4); // goes wrong... tags seem to be js added
 	add_action('quick_edit_custom_box', array(&$this,'quickEditCustomBox'), 10, 2);
 	add_action('save_post', array(&$this,'quickedit_save'), 10, 3);
 //	add_action('edit_post', array(&$this,'quickedit_save'), 10, 3);
@@ -142,7 +143,7 @@ function registerCPTFortpolio() {
 		,'rewrite' => array('slug' => $sFortpolioSlug)//,'with_front'	=> true
 		,'capability_type' => 'post'
 		,'hierarchical' => false
-		,'has_archive' => true
+		,'has_archive' => false//true
 		,'menu_position' => 4
 		,'supports' => array(
 			'title'
@@ -167,7 +168,7 @@ function registerCPTFortpolio() {
 		foreach ($aTaxonomies as $object) {
 			$sKey = $object->key;
 			$sValue = $object->label;
-			$sTaxonomy = $this->sPluginId.'_'.$sKey;
+			$sTaxonomy = $this->getTaxonomyName($sKey);
 			register_taxonomy($sTaxonomy, 'project'.$sKey, array(
 				'hierarchical'			=> true
 				,'show_ui'				=> true
@@ -220,9 +221,8 @@ function enqueScripts() {
  * @return mixed
  */
 function add_cpt_to_query($query) {
-	// todo: almost works but disables pages
 	if ($query->is_main_query()&&array_key_exists('tag',$query->query)) {
-//		dump($query);
+		//dump($query);
 		$query->set('post_type',array('fortpolio','post'));
 		$query->set('orderby','date');
 	}
@@ -464,7 +464,7 @@ public function quickEditCustomBox($col, $type){
 				$sLabel = $meta->label;
 				$sType = $meta->type;
 				//
-				echo '<fieldset class="inline-edit-col-right"><div class="inline-edit-col">';
+				echo '<fieldset class="inline-edit-col-right asdf"><div class="inline-edit-col">';
 				//dump($meta);
 				echo '<label for="'.$sMetaId.'" class="fortpolio-meta">';
 				echo FormElement::getElement(array(
@@ -504,6 +504,10 @@ function quickedit_save($post_id,$post) {
 private function getMetaName($sId){
 	return $this->sPluginId.'-meta-'.$sId;
 }
+
+private function getTaxonomyName($sId){
+	return $this->sPluginId.'_'.$sId;
+}
 //
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -538,46 +542,72 @@ function singeTemplate($single) {
 function addShortCodes(){
 	add_shortcode( 'fortpolio', array(&$this,'fortpolio') );
 }
+/**
+ * The Fortpolio shortcode uses the following attributes:
+ * 	- (string) item='': A comma separated string with slugs for retrieving specific items (default)
+ *  - (boolean) thumb=false: Boolean to show thumb.
+ *  - (boolean) excerpt=true: Boolean to show the excerpt or the full text.
+ *  - (boolean) media=false: Boolean to show the list of attached media.
+ *  - (string) callback: Callback method to override the view (see handleFortpolioHookResult).
+ * Undocumented attributes are presumed taxonomies or meta values. For meta values prepend the key with 'meta_'.
+ * @param $atts
+ * @return string
+ */
 function fortpolio($atts) {
-	$item = $thumb = $excerpt = $media = null;
-	// todo: add [taxonomy=foo]
+	// prevent undefined var/function error msg
+	$item = $thumb = $excerpt = $media = $callback = null;
 	extract( shortcode_atts( array(
 		 'item' => ''
 		 ,'thumb' => false
 		 ,'excerpt' => true
 		 ,'media' => false
+		 ,'callback' => array(&$this,'handleFortpolioHookResult')
 	),$atts));
 	//
-	$item = str_replace('/',',',$item);
-	if ($excerpt==='false') $excerpt = false;
-	if ($media==='true') $media = true;
+	// booleans should be booleans
+	$thumb = $thumb==='true';
+	$excerpt = $excerpt==='true';
+	$media = $media==='true';
 	//
-	$sReturn = '';
 	$bItem = $item!='';
-	$bItems = preg_match('/[\/,]/',$item);
+	$bItems = preg_match('/[,]/',$item);
 	$bList = !$bItem||$bItems;
-	$sWrap = $bList?'li':'div';
 	//
 	$aQuery = array(
 		'post_type' => 'fortpolio'
 		,'post_status' => 'publish'
 		,'posts_per_page' => $bList?-1:1
 	);
-	// non extracted parameters are probably taxonomies
+	//
+	// non extracted parameters presumed taxonomies or meta values
 	if (is_array($atts)) {
 		foreach ($atts as $k=>$v) {
-			if (!isset($aQuery['tax_query'])) $aQuery['tax_query'] = array('relation'=>'AND');
 			if (!isset($$k)) {
-				$aQuery['tax_query'][] = array(
-					'taxonomy' => $k=='category'||$k=='tag'?$k:'fortpolio_'.$k // todo : hmmmm
-					,'terms' => array($v)
-					,'field' => 'slug'
-//						,'operator' => 'NOT IN'
-				);
-			}//dump('taxonomy '.$k.'='.$v);
+				$bNot = substr($v,0,1)==='!';
+				if ($bNot) $v = substr($v,1);
+				// find if we have taxonomy or meta
+				if (substr($k,0,5)==='meta_') { // is meta
+					if (!isset($aQuery['meta_query'])) $aQuery['meta_query'] = array('relation'=>'AND');
+					$aAdd = array(
+						'key' => $this->getMetaName(substr($k,5))
+						,'value' => $v
+					);
+					if ($bNot) $aAdd['operator'] = 'NOT IN';
+					$aQuery['meta_query'][] = $aAdd;
+				} else { // is taxonomy
+					if (!isset($aQuery['tax_query'])) $aQuery['tax_query'] = array('relation'=>'AND');
+					$aAdd = array(
+						// differentiate between default wp taxonomies 'category' and 'tag'
+						'taxonomy' => $k=='category'||$k=='tag'?$k:$this->getTaxonomyName($k)
+						,'terms' => array($v)
+						,'field' => 'slug'
+					);
+					if ($bNot) $aAdd['operator'] = 'NOT IN';
+					$aQuery['tax_query'][] = $aAdd;
+				}
+			}
 		}
 	}
-//			dump($aQuery);
 	// multiple items == multiple loops // todo: multiple loops sucks
 	$aPosts = array();
 	if ($bItems) {
@@ -591,15 +621,39 @@ function fortpolio($atts) {
 		$aPosts = get_posts($aQuery);
 	}
 	//
-	if ($aPosts) {
+	return $callback($aPosts,$thumb,$excerpt,$media);
+}
+
+/**
+ * Handled Fortpolio hook result by creating an unordered list or single item.
+ * @param array $posts
+ * @param bool $thumb
+ * @param bool $excerpt
+ * @param bool $media
+ * @return string
+ */
+function handleFortpolioHookResult($posts,$thumb,$excerpt,$media) {
+	$sReturn = '';
+	if ($posts) {
+		$bList = count($posts)>1;
+		$sWrap = $bList?'li':'div';
 		if ($bList) $sReturn .= '<ul class="fortpolio-list">';
-		foreach ($aPosts as $oPost) {
+		foreach ($posts as $oPost) {
 			$sReturn .= '<'.$sWrap.' class="fortpolio-excerpt">'.$this->getFortpolioItem($oPost,$thumb,$excerpt,$media).'</'.$sWrap.'>';
 		}
 		if ($bList) $sReturn .= '</ul>';
 	}
 	return $sReturn;
 }
+
+/**
+ * Creates HTML for a single Fortpolio item.
+ * @param WP_Post Object $oPost
+ * @param bool $thumb
+ * @param bool $excerpt
+ * @param bool $media
+ * @return string
+ */
 function getFortpolioItem($oPost,$thumb=false,$excerpt=true,$media=false) {
 	$sReturn  = '';
 	$sPermalink = '<a title="'.__('Read more','fortpolio').'" class="thumb" href="'.get_permalink($oPost->ID).'">%s</a>';

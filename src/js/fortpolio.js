@@ -38,5 +38,6 @@ iddqd.ns('fortpolio',(function($){
 	};
 })(jQuery));
 /*include fortpolio.admin.js*/
+/*include fortpolio.admin.edit.js*/
 /*include fortpolio.admin.settings.js*/
 /*include fortpolio.admin.post.js*/
