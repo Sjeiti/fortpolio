@@ -50,7 +50,7 @@ function addHooks() {
 	add_action('init',					array(&$this,'init'));
 	//
 	// admin
-	add_action('admin_menu',			array(&$this,'enqueScripts'));
+	add_action('admin_enqueue_scripts',	array(&$this,'enqueScripts'));
 	add_action('admin_menu',			array(&$this,'initSettings'));
 	add_action('admin_init',			array(&$this,'initSettingsForm'));
 	add_action('admin_head',			array(&$this,'contentTextareaHeight'));
@@ -70,9 +70,9 @@ function addHooks() {
 	//
 	//
 	//
-	// templates // todo: get this working
+	// templates // todo: get this working (or maybe: post-formats)
 	// see: http://wordpress.stackexchange.com/questions/55763/is-it-possible-to-define-a-template-for-a-custom-post-type-within-a-plugin-indep
-	add_filter('single_template',		array(&$this,'singeTemplate'));
+//	add_filter('single_template',		array(&$this,'singeTemplate'));
 	//
 	//
 	// see: http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types
@@ -83,8 +83,6 @@ function addHooks() {
 	add_action('quick_edit_custom_box', array(&$this,'quickEditCustomBox'), 10, 2);
 	add_action('save_post', array(&$this,'quickedit_save'), 10, 3);
 //	add_action('edit_post', array(&$this,'quickedit_save'), 10, 3);
-	//
-	//
 	//
 	//
 	// shortcodes
@@ -211,6 +209,10 @@ function enqueScripts() {
 		wp_enqueue_script('thickbox');
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('json2');
+		wp_enqueue_script('iddqd',			$this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.js');
+		wp_enqueue_script('iddqd.internal',	$this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.js');
+		wp_enqueue_script('iddqd.internal.native.array', $this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.native.array.js');
+		wp_enqueue_script('iddqd.internal.native.string', $this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.native.string.js');
 		wp_enqueue_script('fortpolio', $this->sPluginRootUri.(WP_DEBUG?'js/fortpolio.js':'js/fortpolio.min.js'));
 	}
 }
@@ -513,18 +515,19 @@ private function getTaxonomyName($sId){
 //
 // TEMPLATES
 //
-function singeTemplate($single) {
-	global $post;
-	if ($post->post_type=='fortpolio') {
-		$this->singleHead();
-		add_filter( 'the_content', 'fortpolio_single_content' );
-		function fortpolio_single_content($content){
-			global $wp_fortpolio;
-			return $content.$wp_fortpolio->getMediaHtml(get_the_ID());
-		}
-	}
-	return $single;
-}
+//function singeTemplate($single) {
+//	dump('singeTemplate');
+//	global $post;
+//	if ($post->post_type=='fortpolio') {
+//		$this->singleHead();
+//		add_filter( 'the_content', 'fortpolio_single_content' );
+//		function fortpolio_single_content($content){
+//			global $wp_fortpolio;
+//			return $content.$wp_fortpolio->getMediaHtml(get_the_ID());
+//		}
+//	}
+//	return $single;
+//}
 /*function archiveTemplate($archive) {
 	if (is_post_type_archive($this->sPluginId)) {
 		$sFilePlugin = $this->sPluginRootDir.'templates/archive-'.$this->sPluginId.'.php';
@@ -836,6 +839,7 @@ public function getMediaData($postId) {
 	return $aData;
 }
 public function getMediaHtml($postId) { // todo: refactor with getMediaData
+//	dump('getMediaHtml');
 	$sMedia = get_post_meta($postId,'fortpolio-media', true );
 	$aMedia = json_decode($sMedia);
 	$sHtml = '';
@@ -892,7 +896,8 @@ public function getMediumData($medium) {
 			if (isset($medium->poster)&&$medium->poster!='') {
 				$sPosterSize = $this->getValue('fortpolio_postersize');
 				if ($sPosterSize=='custom') $sPosterSize = 'fortpolio-poster';
-				$aData['uriPoster'] = array_shift(wp_get_attachment_image_src($medium->poster,$sPosterSize));
+				$aImgSrc = wp_get_attachment_image_src($medium->poster,$sPosterSize);
+				$aData['uriPoster'] = array_shift($aImgSrc);
 			}
 		break;
 	}

@@ -15,8 +15,8 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "iddqd": "https://github.com/Sjeiti/iddqd.git",
-    "zen": "https://github.com/Sjeiti/zen.git",
-    "es5-shim": "https://github.com/es-shims/es5-shim.git#~2.3.0"
+    "iddqd": "git://github.com/Sjeiti/iddqd.git",
+    "zen": "git://github.com/Sjeiti/zen.git",
+    "es5-shim": "git://github.com/es-shims/es5-shim.git#~2.3.0"
   }
 }

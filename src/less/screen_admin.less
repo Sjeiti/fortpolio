@@ -142,24 +142,28 @@ body.settings_page_fortpolio {
 		}
 	 	td.addMedia {
 	 	    white-space: nowrap;
-	 	    a { display: none; }
+	 	    button { display: none; }
 	 	}
 		&.type-vimeo .row-actions a {
 			&.edit { display: none; }
 			&:nth-child(2):before { content: ''; }
 		}
-    	&.type-video td.addMedia a {
+    	&.type-video td.addMedia button {
     	    .basicAnchorButton();
     	 	display: inline-block;
     		margin-top: 5px;
-    		span {
+			background-color: #FFD6D6;
+			&.added {
+				background-color: inherit;
+			}
+    		/*span {
     		    padding: 4px 8px;
 				background-image: url(../../style/cross.png);
 				background-repeat: no-repeat;
 				background-position: 2px -20px;
     		}
     		&:hover span { background-position: 2px 4px; }
-    		&.added span { background-image: url(../../style/tick.png); }
+    		&.added span { background-image: url(../../style/tick.png); }*/
 		}
     }
 }

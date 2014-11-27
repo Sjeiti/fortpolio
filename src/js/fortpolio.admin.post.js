@@ -1,7 +1,13 @@
 /*global wp,tb_click,tb_remove*/
-iddqd.ns('fortpolio.admin.post',(function($){//,fp){
+iddqd.ns('fortpolio.admin.post',(function(){
 	'use strict';
-	var $Body
+
+	var undefined
+		,$ = jQuery
+		,arrayMove = iddqd.internal.native.array.move
+		,sprintf = iddqd.internal.native.string.sprintf
+		//
+		,$Body
 		,$MediaBox
 		,$MediaTable,$MediaTBody,$MediaTr
 		,$MediaInput
@@ -24,16 +30,21 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		,sExpectId
 		,sExpectExtension
 	;
+
+	/**
+	 * Initialise fortpolio admin single post page
+	 * @param $body
+	 */
 	function init($body){
-		$Body = $body;
-		console.log('fortpolio.admin.post'); // log
-		initAdminSingle();
+		console.log('fortpolio.admin.post.init'); // log
+		initVariables($body);
+		initEvents();
 	}
-	function initAdminSingle(){
-		console.log('initAdminSingle'); // log
+
+	function initVariables($body){
+		$Body = $body;
 		$MediaBox = $('#fortpolio-media');
 		if ($MediaBox.length) {
-			console.log('$MediaBox.length',$MediaBox.length); // log
 			$MediaTable = $('#fortpolio-media-table');
 			$MediaTBody = $MediaTable.find('tbody');
 			$MediaTr = $MediaTBody.find('tr');
@@ -41,30 +52,41 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 			$AddMediaMenu = $MediaBox.find('nav#fortpolio-add-media-menu');
 			$JsonData = $('#jsonData');
 			aJsonData = JSON.parse($MediaInput.val());
-			// add addMedia functions
+		}
+	}
+
+	function initEvents(){
+		console.log('initEvents'); // log
+		if ($MediaBox.length) {
+			//
+			// set wp.media.editor.send functions for portfolio add_media
 			var $AddMedia = $AddMediaMenu.find('>a');
 			$AddMedia.click(function(){
-				console.log('$AddMedia.click',$AddMedia.click); // log
 				wp.media.editor.send.attachment =	getFnWpMediaEditorSendAttachement();
 				wp.media.editor.send.link =			getFnWpMediaEditorSendLink();
 				wp.media.editor.open($(this));
 				return false;
 			});
+			// reset wp.media.editor.send functions for wysiwyg add_media
 			$Body.find('.add_media').on('click',function() {
 				if ($AddMedia.get(0)!==this) {
 					if (!!fnOldWpMediaEditorSendAttachement) wp.media.editor.send.attachment = fnOldWpMediaEditorSendAttachement;
 					if (!!fnOldWpMediaEditorSendLink) wp.media.editor.send.link = fnOldWpMediaEditorSendLink;
 				}
 			});
+			//
 			// add table functions
 			for (var i=0,l=$MediaTr.length;i<l;i++) addTableRowEvents($MediaTr.eq(i));
-
+			//
 			var iOldIndex;
 			$MediaTBody.sortable({
 				axis: 'y'
 				,start: function(e,ui){ iOldIndex = ui.item.index(); }
 				,update: function(e,ui){
-					aJsonData.move(iOldIndex,ui.item.index());
+					console.log('fixMove',iOldIndex,ui.item.index()); // log
+					//
+					arrayMove(aJsonData,iOldIndex,ui.item.index());
+					//
 					updateMediaInput();
 					$MediaTBody.find('td').css({width:'auto'});
 				}
@@ -72,7 +94,18 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		}
 	}
 
+	//###############################################################################################################################
+	//###############################################################################################################################
+
+	/**
+	 * Caches the wp.media.editor.send.attachment method and returns a new one
+	 * @param type
+	 * @param id
+	 * @param ext
+	 * @returns {Function}
+	 */
 	function getFnWpMediaEditorSendAttachement(type,id,ext){//){//
+		console.log('getFnWpMediaEditorSendAttachement',type,id,ext); // log
 		if (!fnOldWpMediaEditorSendAttachement) fnOldWpMediaEditorSendAttachement = wp.media.editor.send.attachment;
 		return function(props,attachment){
 			console.log('customWpMediaEditorSendAttachement',props,attachment);
@@ -115,10 +148,15 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 				,attachment.editLink
 				,attachment.type
 			);
+			// todo not sure but it looks like if an id is present it is an update to an existing entry
 			id===undefined?jsonAdd(oWpFile):videoMediaAdd(oWpFile,id,ext);
 		};
 	}
 
+	/**
+	 * Caches the wp.media.editor.send.link method and returns a new one
+	 * @returns {Function}
+	 */
 	function getFnWpMediaEditorSendLink(){
 		if (!fnOldWpMediaEditorSendLink) fnOldWpMediaEditorSendLink = wp.media.editor.send.link;
 		return function(embed){
@@ -127,7 +165,14 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		};
 	}
 
-	/*function getFnSendToEditor(type,id,ext){
+	/**
+	 * Caches the window.send_to_editor method and returns a new one
+	 * @param type
+	 * @param id
+	 * @param ext
+	 * @returns {Function}
+	 */
+	function getFnSendToEditor(type,id,ext){
 		if (!fnOldSendToEditor) fnOldSendToEditor = window.send_to_editor;
 		return function(fileHTML){
 			var oData = JSON.parse(fileHTML);
@@ -145,17 +190,131 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 				window.send_to_editor = fnOldSendToEditor;
 			}
 		}
-	}*/
-
-	function getHost(url) {
-		mGetHostAnchor.href = url;
-		return mGetHostAnchor.hostname;
 	}
 
+	//###############################################################################################################################
+	//###############################################################################################################################
+
+	/**
+	 * A value object for a Wordpress file
+	 * @param id
+	 * @param uri
+	 * @param title
+	 * @param excerpt
+	 * @param content
+	 * @param edit
+	 * @param type
+	 * @param data
+	 * @returns {{id: *, uri: *, title: *, excerpt: *, content: *, edit: *, type: *, data: *, toString: toString}}
+	 */
+	function wpFile(id,uri,title,excerpt,content,edit,type,data){
+		return {
+			id:id
+			,uri:uri
+			,title:title
+			,excerpt:excerpt
+			,content:content
+			,edit:edit
+			,type:type
+			,data:data
+			,toString: function(){return '[Object wpFile '+id+']';}
+		};
+	}
+
+	//###############################################################################################################################
+	//###############################################################################################################################
+
+	/**
+	 * Inserts a table row and updates mediaInput from a wpfile value object
+	 * @param wpfile
+	 * @returns {boolean}
+	 */
+	function jsonAdd(wpfile){
+		console.log('jsonAdd',wpfile); // log
+		// todo: test wpfile validity (type vs file)
+		aJsonData.push(jsonFile(wpfile));
+		console.log("\t",aJsonData); // log
+		insertTableRow(wpfile);
+		updateMediaInput();
+		return true;
+	}
+
+	function jsonFile(wpfile){
+		console.log('jsonFile',wpfile); // log
+		var o = {
+			id:wpfile.id
+			,type:wpfile.type
+		};
+		if (o.type=='video') {
+			o.poster = o.mp4 = '';
+			o[{
+				 mp4:'mp4'
+				,jpg:'poster'
+				,jpeg:'poster'
+				,png:'poster'
+				,gif:'poster'
+			}[wpfile.uri.split('.').pop()]] = wpfile.id;
+		} else if (o.type=='vimeo') {
+			o.title = wpfile.title;
+			o.thumb = wpfile.data.thumb;
+		}
+		return o;
+	}
+
+	function getJsonElementById(id){
+		console.log('getJsonElementById',id); // log
+		for (var i=0,l=aJsonData.length;i<l;i++) {
+			var o = aJsonData[i];
+			if (o.id===id) return o;
+		}
+		return false;
+	}
+
+	//###############################################################################################################################
+	//###############################################################################################################################
+
+	/**
+	 * Updates mediaInput from a wpfile value object that is a video
+	 * @param wpfile
+	 * @returns {boolean}
+	 */
+	function videoMediaAdd(wpfile,id,ext){
+		console.log('videoMediaAdd',wpfile,id,ext); // log
+		var bSuccess = true
+			,sExt = wpfile.uri.split('.').pop()
+			,bPoster = ext=='poster';
+		if (sExt!=ext&&(bPoster&&['jpg','jpeg','png','gif'].indexOf(sExt)===-1)) {
+			alert(bPoster?'You have to select an image':'You have to select a video of type '+ext);
+			bSuccess = false;
+		} else {
+			var oElmJson = getJsonElementById(id)
+				,$Tr = $('tr#fortpolioItem_'+id);
+			oElmJson[{poster:'poster',mp4:'mp4'}[ext]] = wpfile.id;
+			if (bPoster) $Tr.find('td.medium>video').attr('poster',wpfile.uri);
+			$Tr.find('td.addMedia>button.'+ext).addClass('added');
+			updateMediaInput();
+		}
+		return bSuccess;
+	}
+
+	//###############################################################################################################################
+	//###############################################################################################################################
+
+	// todo what does processSendLinkUri do?
 	function processSendLinkUri(i,uri){
 		var sHost = getHost(uri);
 		if (sHost.match(/vimeo\.com$/))			processSendLinkUriVimeo(uri);
 		else if (sHost.match(/flickr\.com$/))	processSendLinkUriFlickr(uri);
+	}
+
+	/**
+	 * Retreives the hostname from an url by using a dummy anchor
+	 * @param {string} url
+	 * @returns {string}
+	 */
+	function getHost(url) {
+		mGetHostAnchor.href = url;
+		return mGetHostAnchor.hostname;
 	}
 
 	function processSendLinkUriVimeo(uri){
@@ -199,75 +358,15 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		//sApiFlickr
 	}
 
-	function videoMediaAdd(wpfile,id,ext){
-		var bSuccess = true
-			,sExt = wpfile.uri.split('.').pop()
-			,bPoster = ext=='poster';
-		if (sExt!=ext&&(bPoster&&['jpg','jpeg','png','gif'].indexOf(sExt)===-1)) {
-			alert(bPoster?'You have to select an image':'You have to select a video of type '+ext);
-			bSuccess = false;
-		} else {
-			var oElmJson = getJsonElementById(id)
-				,$Tr = $('tr#fortpolioItem_'+id);
-			oElmJson[{poster:'poster',ogv:'ogg',mp4:'mp4'}[ext]] = wpfile.id;
-			if (bPoster) $Tr.find('td.medium>video').attr('poster',wpfile.uri);
-			$Tr.find('td.addMedia>a.'+ext).addClass('added');
-			updateMediaInput();
-		}
-		return bSuccess;
-	}
+	//###############################################################################################################################
+	//###############################################################################################################################
 
-	//////////////////////#########################################################
-
-	// json functions
-
-	function jsonAdd(wpfile){
-		console.log('jsonAdd',wpfile); // log
-		// todo: test wpfile validity (type vs file)
-		aJsonData.push(jsonFile(wpfile));
-		console.log("\t",aJsonData); // log
-		insertTableRow(wpfile);
-		updateMediaInput();
-		return true;
-	}
-
-	function jsonFile(wpfile){
-		var o = {
-			id:wpfile.id
-			,type:wpfile.type
-		};
-		if (o.type=='video') {
-			o.poster = o.ogg = o.mp4 = '';
-			o[{
-				 ogv:'ogg'
-				,mp4:'mp4'
-				,jpg:'poster'
-				,jpeg:'poster'
-				,png:'poster'
-				,gif:'poster'
-			}[wpfile.uri.split('.').pop()]] = wpfile.id;
-		} else if (o.type=='vimeo') {
-			o.title = wpfile.title;
-			o.thumb = wpfile.data.thumb;
-		}
-		return o;
-	}
-
-	function getJsonElementById(id){
-		console.log('getJsonElementById',id); // log
-		for (var i=0,l=aJsonData.length;i<l;i++) {
-			var o = aJsonData[i];
-			if (o.id===id) return o;
-		}
-		return false;
-	}
-
-	//////////////////////#########################################################
-
-	// table functions
-
+	/**
+	 * Adds a table row from a wpfile value object
+	 * @param wpfile
+	 */
 	function insertTableRow(wpfile){
-		console.log('insertTableRow',wpfile); // log
+		console.log('insertTableRow',wpfile,sTableRow); // log
 		addTableRowEvents($(sprintf(
 			sTableRow
 			,wpfile.id
@@ -278,29 +377,33 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		)).appendTo($MediaTBody));
 	}
 
+	/**
+	 * Add event listeners for a table row
+	 * @param $tr
+	 */
 	function addTableRowEvents($tr){
-		//console.log($tr); // log
+		//console.log('addTableRowEvents',$tr.get(0).innerHTML); // log
 		var iId = $tr.attr('id').match(/\d+/)[0]<<0
 			,oElmJson = getJsonElementById(iId);
 		// delete item
 		$tr.find('.delete').click(tableRowDelete);
 		// video buttons
-		$tr.find('td.addMedia>a').each(function(i,el){
-			var $A = $(el)
-				,sClass = $A.attr('class')
+		$tr.find('td.addMedia>button').each(function(i,el){
+			var $Button = $(el)
+				,sClass = $Button.attr('class')
 				,sType = sClass=='poster'?'image':'video'
-				,sTargetElm = 'a.'+sType;
-			$A.attr('href',$AddMediaMenu.find(sTargetElm).attr('href'));
+//				,sTargetElm = 'a.'+sType
+			;
+//			$Button.attr('href',$AddMediaMenu.find(sTargetElm).attr('href'));
+//			console.log('buttonhref',$AddMediaMenu,$AddMediaMenu.find(sTargetElm).attr('href')); // log
 			// check video media
-			if (oElmJson[sClass]&&oElmJson[sClass]!=='') $A.addClass('added');
+			if (oElmJson[sClass]&&oElmJson[sClass]!=='') $Button.addClass('added');
 			// add thickbox funcionality
-			$A.click(function(){
-				// todo: getFnSendToEditor??????
-				//window.send_to_editor = getFnSendToEditor(sType,iId,sClass);
-				tb_click.call(this);
+			$Button.click(function(){
+				wp.media.editor.send.attachment = getFnWpMediaEditorSendAttachement(sType,iId,sClass);
+				wp.media.editor.open($(this));
 				return false;
 			});
-			//console.log('basdf',i,$AddMediaMenu.find(sTargetElm).attr('href')); // log
 		});
 		// fix for ui sortable so td width is maintained (reset on move)
 		$tr.mousedown(function(){
@@ -311,33 +414,13 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		});
 	}
 
-	function tableRowDelete(e){
-		var $Tr = $(e.currentTarget).parents('tr')
-			,iIndex = $Tr.index();
-		$Tr.remove();
-		aJsonData.splice(iIndex,1);
-		updateMediaInput();
-	}
-
-	function updateMediaInput(){
-		console.log('updateMediaInput'); // log
-		var sJson = JSON.stringify(aJsonData);
-		$MediaInput.val(sJson);
-		$JsonData.text(sJson);
-		registerChange();
-	}
-
-	function registerChange(){
-		// todo: implement
-	//			console.log(tinyMCE); // log
-	//			if (tinyMCE) {
-	////				var oMce = tinyMCE.activeEditor;
-	//				console.log(tinyMCE.editors); // log
-	//			}
-		//wpNavMenu.registerChange();
-	}
-
+	/**
+	 * Returns the HTML preview thumb for a table row by wpfile value object
+	 * @param wpfile
+	 * @returns {string}
+	 */
 	function getMediaHTML(wpfile){
+		console.log('getMediaHTML'); // log
 		var type = wpfile.type
 			,uri = wpfile.uri
 			,sReturn = '';
@@ -350,49 +433,38 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 		return sReturn;
 	}
 
-	//////////////////////#########################################################
-
-	// helper functions
-
-	function sprintf(s){
-		var aMatch = s.match(/(%\d+\$s)/gi);
-		//aMatch.unique();
-		//unique.apply(aMatch);
-		for (var i=1,l=aMatch.length;i<=l;i++) s = s.replace(new RegExp('(\\%'+i+'\\$s)','g'),arguments[i]);
-		return s;
+	/**
+	 * Delete a table row and update mediaInput
+	 * @param e
+	 */
+	function tableRowDelete(e){
+		console.log('tableRowDelete'); // log
+		var $Tr = $(e.currentTarget).parents('tr')
+			,iIndex = $Tr.index();
+		$Tr.remove();
+		aJsonData.splice(iIndex,1);
+		updateMediaInput();
 	}
 
-	/*function unique(){
-		var a = [],i,j=this.length,k=j,o;
-		for (i=0;i<j;i++) {
-			o = this[i];
-			if (a.indexOf(o)===-1) {
-				a.push(o);
-			} else {
-				this.splice(i,1);
-				i--;
-				j--;
-			}
-		}
-		return k-j;
-	}*/
+	/**
+	 * Update mediaInput, which is the JSON data that gets saved
+	 */
+	function updateMediaInput(){
+		console.log('updateMediaInput'); // log
+		var sJson = JSON.stringify(aJsonData);
+		$MediaInput.val(sJson);
+		$JsonData.text(sJson);
+		registerChange();
+	}
 
-	//////////////////////#########################################################
-
-	// value objects
-
-	function wpFile(id,uri,title,excerpt,content,edit,type,data){
-		return {
-			id:id
-			,uri:uri
-			,title:title
-			,excerpt:excerpt
-			,content:content
-			,edit:edit
-			,type:type
-			,data:data
-			,toString: function(){return '[Object wpFile '+id+']';}
-		};
+	function registerChange(){
+		//console.log('registerChange',tinyMCE); // log
+		// todo: implement
+		/*if (tinyMCE) {
+			//var oMce = tinyMCE.activeEditor;
+			console.log(tinyMCE.editors); // log
+		}*/
+		//wpNavMenu.registerChange();
 	}
 
 	//////////////////////#########################################################
@@ -428,10 +500,16 @@ iddqd.ns('fortpolio.admin.post',(function($){//,fp){
 
 		return html;
 	}*/
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 	//////////////////////#########################################################
 	return {
 		init:init
 		,setTableRow: function(s){sTableRow = s;}
-		,addItem: addItem
+//		,addItem: addItem
 	};
-})(jQuery,fortpolio));
+})());

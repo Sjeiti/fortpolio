@@ -38,7 +38,7 @@ echo '<section id="container" class="portfolio">';
         $iPostId = get_the_ID();
         echo '<div class="entry">';
 //            $oPortfolio->drawVideo($iPostId);
-            echo '<h2 class="entry-title">'.get_the_title().'</h2><br/>';
+            echo '<h2 class="entry-title"><span>'.get_the_title().'</span></h2><br/>';
             echo '<div class="entry-content">'.get_the_content().'</div>';
 
             $sExtraMeta = '';

@@ -106,10 +106,22 @@ if (!function_exists("get_featured")) {
 }
 
 // getTagId
+if (!function_exists("getTagId")) {
 function getTagId($name) {
 	global $wpdb;
 	$tag_ID = $wpdb->get_var("SELECT * FROM ".$wpdb->terms." WHERE  `name` =  '".$name."'");
 	return $tag_ID;
+}
+}
+
+// getTagId
+if (!function_exists("outputBuffer")) {
+function outputBuffer($name) {
+	ob_start();
+	$sHtml = ob_get_contents();
+	ob_end_flush();
+	return $sHtml;
+}
 }
 
 /*
