@@ -10,6 +10,18 @@ module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json')
 
+		,watch: {
+			gruntfile: {
+				files: ['Gruntfile.js', '.jshintrc'],
+				options: { spawn: false, reload: true }
+			}
+			,js: {
+				files: ['src/js/*.js']
+				,tasks: ['js']
+				,options: { spawn: false }
+			}
+		}
+
 		,jshint: {
 			options: { jshintrc: '.jshintrc' },
 			files: 'src/js/fortpolio.js'

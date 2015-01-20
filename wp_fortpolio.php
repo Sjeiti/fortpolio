@@ -27,6 +27,7 @@ protected $bOverrideMediaButtons = false;
 protected $sMedia = 'fortpolio-media';
 protected $sMeta =  'fortpolio-meta';
 
+
 /**
  * The constructor constructing stuff.
  */
@@ -269,6 +270,8 @@ function mediaView( $object, $box ) {
 		,__('ogg video','fortpolio')
 		,__('Add or change mp4 video','fortpolio')
 		,__('mp4 video','fortpolio')
+		,__('Add or change webm video','fortpolio')
+		,__('webm video','fortpolio')
 	);
 	echo '<script>fortpolio.admin.post.setTableRow(\''.preg_replace(array('/\s{2,}/','/[\t\n]/'),'',$sTr).'\')</script>';
 	//
@@ -892,7 +895,8 @@ public function getMediumData($medium) {
 		break;
 		case 'video':
 			if (isset($medium->mp4)&&$medium->mp4!='') $aData['uriMp4'] = wp_get_attachment_url($medium->mp4);
-			if (isset($medium->ogg)&&$medium->ogg!='') $aData['uriOgg'] = wp_get_attachment_url($medium->ogg);
+			if (isset($medium->ogg)&&$medium->ogg!='') $aData['uriOgg'] = wp_get_attachment_url($medium->ogg);//todo:rem
+			if (isset($medium->webm)&&$medium->webm!='') $aData['uriWebm'] = wp_get_attachment_url($medium->webm);
 			if (isset($medium->poster)&&$medium->poster!='') {
 				$sPosterSize = $this->getValue('fortpolio_postersize');
 				if ($sPosterSize=='custom') $sPosterSize = 'fortpolio-poster';
@@ -917,6 +921,7 @@ public function getMediumHtml($medium) {
 			$sReturn = '<video'.(isset($aData['uriPoster'])?' poster="'.$aData['uriPoster'].'"':'').'>
 				'.(isset($aData['uriMp4'])?'<source type="video/mp4" src="'.$aData['uriMp4'].'"></source>':'').'
 				'.(isset($aData['uriOgg'])?'<source type="video/ogg" src="'.$aData['uriOgg'].'"></source>':'').'
+				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
 			</video>';
 		break;
 		case 'file':  $sReturn = '<a href="'.$aData['uri'].'" target="_blank">'.array_pop(explode('/',$aData['uri'])).'</a>'; break;

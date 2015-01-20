@@ -246,9 +246,10 @@ iddqd.ns('fortpolio.admin.post',(function(){
 			,type:wpfile.type
 		};
 		if (o.type=='video') {
-			o.poster = o.mp4 = '';
+			o.poster = o.mp4 = o.webm = '';
 			o[{
 				 mp4:'mp4'
+				,webm:'webm'
 				,jpg:'poster'
 				,jpeg:'poster'
 				,png:'poster'
@@ -289,7 +290,7 @@ iddqd.ns('fortpolio.admin.post',(function(){
 		} else {
 			var oElmJson = getJsonElementById(id)
 				,$Tr = $('tr#fortpolioItem_'+id);
-			oElmJson[{poster:'poster',mp4:'mp4'}[ext]] = wpfile.id;
+			oElmJson[{poster:'poster',mp4:'mp4',webm:'webm'}[ext]] = wpfile.id;
 			if (bPoster) $Tr.find('td.medium>video').attr('poster',wpfile.uri);
 			$Tr.find('td.addMedia>button.'+ext).addClass('added');
 			updateMediaInput();
