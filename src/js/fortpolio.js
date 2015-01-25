@@ -1,8 +1,3 @@
-
-/*include ../../bower_components/es5-shim/es5-shim.min.js*/ // see: https://github.com/es-shims/es5-shim
-/*include ../../bower_components/es5-shim/es5-sham.min.js*/ // see: https://github.com/es-shims/es5-shim
-/*include ../../bower_components/iddqd/src/iddqd.js*/ // see: https://github.com/Sjeiti/iddqd
-/*include ../../bower_components/zen/dist/zen.min.js*/ // see: https://github.com/Sjeiti/zen
 /**
  * Fortpolio
  * @namespace fortpolio
@@ -34,7 +29,7 @@ iddqd.ns('fortpolio',(function($){
 	});
 
 	return {
-		toString: function(){return '[Object fortpolio]'}
+		toString: function(){return '[Object fortpolio]';}
 	};
 })(jQuery));
 /*include fortpolio.admin.js*/

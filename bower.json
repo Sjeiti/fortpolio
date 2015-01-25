@@ -13,9 +13,11 @@
     "test",
     "tests"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "iddqd": "~2.4.69",
+    "zenjs": "~0.1.7"
+  },
   "devDependencies": {
-    "iddqd": "git://github.com/Sjeiti/iddqd.git",
     "zen": "git://github.com/Sjeiti/zen.git",
     "es5-shim": "git://github.com/es-shims/es5-shim.git#~2.3.0"
   }

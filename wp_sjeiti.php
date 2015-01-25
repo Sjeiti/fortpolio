@@ -14,6 +14,7 @@ if (!class_exists('WPSjeiti')) {
 		protected $sVersion;
 		protected $aForm;
 		//
+        protected $aTemplates = array();
 		private $aError = array();
 		//
 		// WPSjeiti
@@ -28,6 +29,18 @@ if (!class_exists('WPSjeiti')) {
 			define($this->sConstantId.'_PRFX',			$this->sPluginId.'_field');
 			if (!defined('T')) define('T',				constant($sDebugName)?"\t":"");
 			if (!defined('N')) define('N',				constant($sDebugName)?"\n":"");
+			//
+			add_action('plugins_loaded',array(&$this,'handlePluginsLoaded') );
+		}
+		//
+		//
+		public function handlePluginsLoaded(){
+			//
+			// set locale
+			load_plugin_textdomain($this->sPluginId, false, dirname(plugin_basename( __FILE__ )).'/lang');
+			$this->getFormdata(true); // force form data with locale
+			//
+			$this->initTemplates();
 		}
 		//
 		// getValue
@@ -253,10 +266,15 @@ if (!class_exists('WPSjeiti')) {
 		}
 		//
 		// showErrors
-		protected function showErrors() {
+		protected function getErrors() {
+			$sErrors = '';
 			foreach ($this->aError as $i=>$error) {
-				echo T.T.$this->errorBox($error[0],$error[1]);
+				$sErrors .= $this->errorBox($error[0],$error[1]);
 			}
+			return $sErrors;
+		}
+		protected function showErrors() {
+			echo getErrors;
 		}
 		//
 		// errorBox
@@ -266,24 +284,11 @@ if (!class_exists('WPSjeiti')) {
 		//
 		// like plugin?
 		protected function plugin_like() {
-			$sLikeHtml  = '';
-//			$sLikeHtml .= '<hr/>';
-			$sLikeHtml .= '<strong>If you like '.$this->sPluginName.':</strong>';
-			$sLikeHtml .= '<p><a href="'.$this->sPluginWpUri.'" target="wp">Please rate it</a></p>';
-			$sLikeHtml .= '<p>or</p>';
-			$sLikeHtml .= '<p><a href="'.$this->sPluginFlattrUri.'" target="flattr"><img src="'.$this->sPluginRootUri.'/style/flattr-badge-large.png" /></a></p>';
-			$this->postbox(
-				 'donate'
-				,'<strong class="red">'.$this->sPluginName.' '.$this->sVersion.'</strong>'
-				//,'<form action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_donations"><input type="hidden" name="business" value="FFDDQVHENGNXG"><input type="hidden" name="lc" value="NL"><input type="hidden" name="item_name" value="sfbrowser"><input type="hidden" name="currency_code" value="EUR"><input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHosted"><input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen."><img alt="" border="0" src="https://www.paypal.com/nl_NL/i/scr/pixel.gif" width="1" height="1"></form>'
-				,$sLikeHtml
-			);
-			/*Changelog
-See updates for v1.4.7
-Getting started?
-View the plugin website
-Please support us!
-Rate the plugin*/
+			$this->getTemplate('like.php',array(
+				'pluginName'=>$this->sPluginName
+				,'pluginUri'=>$this->sPluginWpUri
+				,'pluginVersion'=>$this->sVersion
+			));
 		}
 		//
 		// plugin_action_links
@@ -296,5 +301,106 @@ Rate the plugin*/
 			}
 			return $links;
 		}
+		//
+		// TEMPLATES ////////////////////////////////////////////////////////////////////////////
+		//
+		protected function initTemplates() {
+			add_filter('page_attributes_dropdown_pages_args',array($this,'register_project_templates'));
+			add_filter('wp_insert_post_data',array($this,'register_project_templates'));
+			add_filter('template_include',array($this,'view_project_template'));
+		}
+
+        /**
+         * Adds our template to the pages cache in order to trick WordPress
+         * into thinking the template file exists where it doens't really exist.
+         */
+		public function register_project_templates($atts) {
+			$cache_key = 'page_templates-'.md5(get_theme_root().'/'.get_stylesheet());
+			$templates = wp_get_theme()->get_page_templates();
+			if (empty($templates)) $templates = array();
+			wp_cache_delete($cache_key,'themes');
+			$templates = array_merge($templates,$this->aTemplates);
+			wp_cache_add($cache_key,$templates,'themes',1800);
+			return $atts;
+		}
+
+        /**
+         * Checks if the template is assigned to the page
+		 */
+		public function view_project_template($template) {
+			global $post;
+			if (!isset($this->aTemplates[get_post_meta($post->ID,'_wp_page_template',true)])) {
+				return $template;
+			}
+			$file = plugin_dir_path(__FILE__).get_post_meta($post->ID,'_wp_page_template',true);
+			if (file_exists($file)) {
+				return $file;
+			} else {
+				// make warning for missing template
+				echo $file;
+			}
+			return $template;
+		}
+
+		/////////////////////////////////////////////////////////////////////
+
+		/**
+		 * Get other templates (e.g. product attributes) passing attributes and including the file.
+		 *
+		 * @access public
+		 * @param string $template_name
+		 * @param array $args (default: array())
+		 * @param string $template_path (default: '')
+		 * @param string $default_path (default: '')
+		 * @return void
+		 */
+		protected function getTemplate($template_name,$args = array(),$template_path = '',$default_path = '') {
+			if ($args&&is_array($args)) extract($args);
+			$located = $this->locateTemplate($template_name,$template_path,$default_path);
+			if (!file_exists($located)) {
+				dump($located);
+				//_doing_it_wrong(__FUNCTION__,sprintf('<code>%s</code> does not exist.',$located),'2.1');
+				return;
+			}
+			//$located = apply_filters('wc_get_template',$located,$template_name,$args,$template_path,$default_path);
+			//do_action('woocommerce_before_template_part',$template_name,$template_path,$located,$args);
+			include($located);
+			//do_action('woocommerce_after_template_part',$template_name,$template_path,$located,$args);
+		}
+
+		/**
+		 * Locate a template and return the path for inclusion.
+		 * This is the load order:
+		 *        yourtheme        /    $template_path    /    $template_name
+		 *        yourtheme        /    $template_name
+		 *        $default_path    /    $template_name
+		 * @access public
+		 * @param string $template_name
+		 * @param string $template_path (default: '')
+		 * @param string $default_path (default: '')
+		 * @return string
+		 */
+		protected function locateTemplate($template_name,$template_path = '',$default_path = '') {
+			if (!$template_path) $template_path = $this->sPluginId.'/';
+			if (!$default_path) $default_path = $this->plugin_path().'/partials/';
+			$template = locate_template(array(trailingslashit($template_path).$template_name,$template_name));
+			if (!$template) $template = $default_path.$template_name;
+			return apply_filters('woocommerce_locate_template',$template,$template_name,$template_path);
+		}
+
+		/**
+		 * Get the plugin path.
+		 * @return string
+		 */
+		protected function plugin_path() {
+			return untrailingslashit( plugin_dir_path( __FILE__ ) );
+		}
+
+		function returnRequire($file){
+			ob_start();
+			require($file);
+			return ob_get_clean();
+		}
+
 	}
 }

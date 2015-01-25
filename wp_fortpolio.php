@@ -20,7 +20,7 @@ protected $sPluginHomeUri = 'http://fortpolio.sjeiti.com/';
 protected $sPluginWpUri = 'http://wordpress.org/extend/plugins/fortpolio/';
 protected $sPluginFlattrUri = 'http://flattr.com/thing/99947/Fortpolio';
 protected $sConstantId = 'FPL';
-protected $sVersion = '1.0.0';
+protected $sVersion = '1.1.0';
 
 protected $bOverrideMediaButtons = false;
 
@@ -35,17 +35,17 @@ function __construct() {
 	parent::__construct();
 	$this->sPluginRootUri = plugin_dir_url(__FILE__);
 	$this->sPluginRootDir = plugin_dir_path(__FILE__);
-	add_action('plugins_loaded',array(&$this,'addHooks'));
+	$this->aTemplates = array(
+		'tmpl/archive-fortpolio.php' => 'Portfolio archive'
+		,'tmpl/page-fortpolio.php' => 'Portfolio page'
+	);
 }
 
 /**
 * Add all the hooks when the plugins are loaded.
 */
-function addHooks() {
-	//
-	// set locale
-	load_plugin_textdomain($this->sPluginId, false, dirname(plugin_basename( __FILE__ )).'/lang');
-	$this->getFormdata(true); // force form data with locale
+function handlePluginsLoaded() {
+	parent::handlePluginsLoaded();
 	//
 	// general
 	add_action('init',					array(&$this,'init'));
@@ -69,11 +69,9 @@ function addHooks() {
 	add_action('pre_get_posts',			array(&$this,'add_cpt_to_query') );
 	//
 	//
-	//
-	//
 	// templates // todo: get this working (or maybe: post-formats)
 	// see: http://wordpress.stackexchange.com/questions/55763/is-it-possible-to-define-a-template-for-a-custom-post-type-within-a-plugin-indep
-//	add_filter('single_template',		array(&$this,'singeTemplate'));
+	// add_filter('single_template', array(&$this,'singeTemplate'));
 	//
 	//
 	// see: http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types
@@ -210,11 +208,13 @@ function enqueScripts() {
 		wp_enqueue_script('thickbox');
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('json2');
-		wp_enqueue_script('iddqd',			$this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.js');
-		wp_enqueue_script('iddqd.internal',	$this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.js');
-		wp_enqueue_script('iddqd.internal.native.array', $this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.native.array.js');
-		wp_enqueue_script('iddqd.internal.native.string', $this->sPluginRootUri.'src/vendor/iddqd/src/iddqd.internal.native.string.js');
-		wp_enqueue_script('fortpolio', $this->sPluginRootUri.(WP_DEBUG?'js/fortpolio.js':'js/fortpolio.min.js'));
+		//
+		foreach (array(
+			'vendor' => 'js/vendor.js'
+			,'fortpolio' => (WP_DEBUG?'js/fortpolio.js':'js/fortpolio.min.js')
+		) as $id=>$uri) {
+			wp_enqueue_script($id,$this->sPluginRootUri.$uri,null,filemtime($this->sPluginRootDir.$uri));
+		}
 	}
 }
 
@@ -225,7 +225,6 @@ function enqueScripts() {
  */
 function add_cpt_to_query($query) {
 	if ($query->is_main_query()&&array_key_exists('tag',$query->query)) {
-		//dump($query);
 		$query->set('post_type',array('fortpolio','post'));
 		$query->set('orderby','date');
 	}
@@ -253,26 +252,7 @@ function mediaView( $object, $box ) {
 	$this->addNonce('media');
 	//
 	// inject html snippets into js object
-	$sTr = sprintf(
-		file_get_contents($this->sPluginRootDir.'html/tableRow.html')
-		,'%1$s'
-		,'%2$s'
-		,'%3$s'
-		,'%4$s'
-		,'%5$s'
-		,__('Edit this item','fortpolio')
-		,__('Edit','fortpolio')
-		,__('Delete this item','fortpolio')
-		,__('Delete','fortpolio')
-		,__('Add or change poster image','fortpolio')
-		,__('Poster image','fortpolio')
-		,__('Add or change ogg video','fortpolio')
-		,__('ogg video','fortpolio')
-		,__('Add or change mp4 video','fortpolio')
-		,__('mp4 video','fortpolio')
-		,__('Add or change webm video','fortpolio')
-		,__('webm video','fortpolio')
-	);
+	$sTr = $this->returnRequire('partials/mediaTableRow.php');
 	echo '<script>fortpolio.admin.post.setTableRow(\''.preg_replace(array('/\s{2,}/','/[\t\n]/'),'',$sTr).'\')</script>';
 	//
 	// add media buttons
@@ -300,71 +280,11 @@ function mediaView( $object, $box ) {
 	// show json data
 	if (WP_FPL_DEBUG) echo '<div id="jsonData">'.$sValue.'</div>';
 	// media list
-	$aJson = json_decode($sValue);
-	?><table cellspacing="0" class="wp-list-table widefat" id="fortpolio-media-table">
-		<thead><tr>
-			<th><?php _e('Type','fortpolio'); ?></th>
-			<th><?php _e('Title','fortpolio'); ?></th>
-			<th><?php _e('Medium','fortpolio'); ?></th>
-			<th></th>
-		</tr></thead>
-		<tbody>
-		<?php
-
-			/*function curl_get($url) {
-				$curl = curl_init($url);
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-				$return = curl_exec($curl);
-				curl_close($curl);
-				return $return;
-			}*/
-
-			$sTbody = '';
-			foreach($aJson as $oMedium) {
-				/* todo: fix like post :: add_filter('redirect_post_location',...
-				 * hack media.php ln 39 : wp_redirect($location);
-				 * to : wp_redirect(isset($_GET['redir'])?str_replace('&amp;','&',$_GET['redir']):$location);
-				 */
-				if ($oMedium->type=='vimeo') {
-//							$sUri = 'http://vimeo.com/api/v2/video/'.$oMedium->id.'.json';
-//							$aVimeoJson = array_pop(json_decode(curl_get($sUri)));
-					//
-					$sTbody .= sprintf(
-						$sTr
-						,$oMedium->id
-						,$oMedium->type
-						,'javascript:function(){}'
-						,$oMedium->title
-						,$this->getMediumHtml($oMedium)//'<img src="'.$oMedium->thumb.'" />'
-					);
-				} else {
-					$sEditPostLink = get_edit_post_link($oMedium->id).'&redir='.urlencode(get_edit_post_link($post->ID));
-					//dump($sEditPostLink);
-					$sTbody .= sprintf(
-						$sTr
-						,$oMedium->id
-						,$oMedium->type
-						,$sEditPostLink
-						,get_the_title($oMedium->id)
-						,$this->getMediumHtml($oMedium)
-					);
-					//wp_get_attachment_url($oMedium->id)
-					//wp_get_attachment_image( $attachment_id, $size, $icon, $attr );
-					//wp_get_attachment_metadata( $post_id, $unfiltered );
-					//wp_get_attachment_url( $id );
-					//wp_get_attachment_thumb_file( $post_id );
-					//wp_get_attachment_thumb_url( $post_id );
-					//dump(wp_get_attachment_metadata($oMedium->id)); // use this for image
-					//dump(wp_get_attachment_url($oMedium->id)); // use this for non-image
-					//dump(wp_get_attachment_thumb_url($oMedium->id));
-				}
-			}
-			echo $sTbody;
-		?>
-		</tbody>
-	</table><?php
+	$this->getTemplate('mediaTable.php',array(
+		'json'=>json_decode($sValue)
+		,'tr'=>$sTr
+		,'this'=>$this
+	));
 }
 function mediaSendToEditor($html, $attachment_id, $attachment) {
 	if (isset($_POST['_wp_http_referer'])) {
@@ -401,17 +321,19 @@ function metaFieldsView( $object, $box ) {
 	$this->addNonce('metameta');
 	$sMetameta = $this->getValue('fortpolio_metameta');
 	$aMetameta = json_decode($sMetameta);
-	//echo print_r($aMetameta,true);
-	foreach ($aMetameta as $meta) {//todo:dry #1234
-		$sMetaId = $this->getMetaName($meta->key);
-		$sLabel = $meta->label;
-		$sType = $meta->type;
-		$sValue = get_post_meta($object->ID,$sMetaId, true );
-		echo '<p><label for="'.$sMetaId.'">'.$sLabel.FormElement::getElement(array(
-			'id'=>$sMetaId
-			,'type'=>$sType
-			,'value'=>$sValue
-		)).'</label></p>';
+	if (is_array($aMetameta)) {
+		//echo print_r($aMetameta,true);
+		foreach ($aMetameta as $meta) {//todo:dry #1234
+			$sMetaId = $this->getMetaName($meta->key);
+			$sLabel = $meta->label;
+			$sType = $meta->type;
+			$sValue = get_post_meta($object->ID,$sMetaId, true );
+			echo '<p><label for="'.$sMetaId.'">'.$sLabel.FormElement::getElement(array(
+				'id'=>$sMetaId
+				,'type'=>$sType
+				,'value'=>$sValue
+			)).'</label></p>';
+		}
 	}
 }
 function saveMetaFields( $page_id, $page ) {
@@ -493,6 +415,7 @@ function quickedit_save($post_id,$post) {
 	if (
 		$post->post_type==='fortpolio'
 		&&current_user_can('edit_post',$post_id)
+		&&isset($_POST['action'])
 		&&$_POST['action']==='inline-save'
 	) {
 		$sMetameta = $this->getValue('fortpolio_metameta');
@@ -514,34 +437,6 @@ private function getTaxonomyName($sId){
 	return $this->sPluginId.'_'.$sId;
 }
 //
-/////////////////////////////////////////////////////////////////////////////////////////////
-//
-// TEMPLATES
-//
-//function singeTemplate($single) {
-//	dump('singeTemplate');
-//	global $post;
-//	if ($post->post_type=='fortpolio') {
-//		$this->singleHead();
-//		add_filter( 'the_content', 'fortpolio_single_content' );
-//		function fortpolio_single_content($content){
-//			global $wp_fortpolio;
-//			return $content.$wp_fortpolio->getMediaHtml(get_the_ID());
-//		}
-//	}
-//	return $single;
-//}
-/*function archiveTemplate($archive) {
-	if (is_post_type_archive($this->sPluginId)) {
-		$sFilePlugin = $this->sPluginRootDir.'templates/archive-'.$this->sPluginId.'.php';
-		$sFileTheme  = get_template_directory().'/fortpolio/archive-'.$this->sPluginId.'.php';
-		if (file_exists($sFileTheme)) $archive = $sFileTheme;
-		else $archive = $sFilePlugin;
-	}
-	return $archive;
-}*/
-//
-/////////////////////////////////////////////////////////////////////////////////////////////
 //
 // SHORTCODES
 //
@@ -712,6 +607,16 @@ function initSettings() {
 	add_options_page(__('Fortpolio options', 'fortpolio'), __('Fortpolio', 'fortpolio'), 'manage_options', 'fortpolio', array(&$this,'settingsPage'));
 }
 function settingsPage() {
+	$this->getTemplate('admin-form.php',array(
+		'pluginName'=>$this->sPluginName
+		,'errors'=>$this->getErrors()
+		,'pluginId'=>$this->sPluginId
+//		,'pluginId'=>FPL_SETTINGS
+//		,'pluginId'=>$this->sPluginId
+//	settings_fields(FPL_SETTINGS);
+//	do_settings_sections(FPL_PAGE);
+	));
+	return;
 	?><style>
 		/*.postbox .inside {padding: 0 15px 5px 15px;}
 		.postbox .inside form {text-align:center;margin:5px 0;}
@@ -919,9 +824,9 @@ public function getMediumHtml($medium) {
 		break; // todo: add href and custom thumb
 		case 'video':
 			$sReturn = '<video'.(isset($aData['uriPoster'])?' poster="'.$aData['uriPoster'].'"':'').'>
+				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
 				'.(isset($aData['uriMp4'])?'<source type="video/mp4" src="'.$aData['uriMp4'].'"></source>':'').'
 				'.(isset($aData['uriOgg'])?'<source type="video/ogg" src="'.$aData['uriOgg'].'"></source>':'').'
-				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
 			</video>';
 		break;
 		case 'file':  $sReturn = '<a href="'.$aData['uri'].'" target="_blank">'.array_pop(explode('/',$aData['uri'])).'</a>'; break;

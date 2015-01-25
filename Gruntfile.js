@@ -4,8 +4,25 @@ module.exports = function (grunt) {
 	/* jshint strict: false */
 
 	require('load-grunt-tasks')(grunt);
+	grunt.loadTasks('gruntTasks');
+    require('time-grunt')(grunt);
 
-	var fs = require('fs');
+	var fs = require('fs')
+		,sFolderWPRepo = 'wprepo/trunk/'
+		,aFiles = [
+			'*.php'
+			,'LICENSE'
+			,'readme.txt'
+			,'html/**'
+			,'inc/**'
+			,'js/**'
+			,'lang/**'
+			,'style/**'
+			,'templates/**'
+			,'tmpl/**'
+			,'partials/**'
+			,'tmpl/**'
+		];
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json')
@@ -18,6 +35,21 @@ module.exports = function (grunt) {
 			,js: {
 				files: ['src/js/*.js']
 				,tasks: ['js']
+				,options: { spawn: false }
+			}
+			,bower: {
+				files: ['.bowerrc','bower.json']
+				,tasks: ['bower_wp']
+				,options: { spawn: false }
+			}
+//			,markdown: {
+//				files: ['readme.txt']
+//				,tasks: ['markdown']
+//				,options: { spawn: false }
+//			}
+			,copytosvn: {
+				files: aFiles
+				,tasks: ['copy:wprepo']
 				,options: { spawn: false }
 			}
 		}
@@ -62,6 +94,31 @@ module.exports = function (grunt) {
 			,style: {
 				src: ['src/less/screen_single.less'],
 				dest: 'style/screen_single.css'
+			}
+		}
+
+		// Copy all the things!
+		,copy: {
+			wprepo: {
+				files: [
+					{
+						expand: true
+						,cwd: ''
+						,src: aFiles
+						,dest: sFolderWPRepo
+						,filter: 'isFile'
+					}
+				]
+			}
+		}
+
+		,bower_wp: {
+			wp: {
+				json: 'bower.json'
+				,bowerrc: '.bowerrc'
+				,dest: null
+				,filesDest: null
+				,fileDest: './js/vendor.js'
 			}
 		}
 

@@ -1,7 +1,8 @@
 
 iddqd.ns('fortpolio.admin.settings',(function($){//,fp){
 	'use strict';
-	var $Body;
+	var $Body
+		,tmpl = iddqd.utils.tmpl;
 	function init($body){
 		$Body = $body;
 		//console.log('settingsinit'); // log
@@ -93,7 +94,7 @@ iddqd.ns('fortpolio.admin.settings',(function($){//,fp){
 			}
 			function tablerowAdd(obj){
 				//console.log('tablerowAdd',obj); // log
-				var $Tr = $(iddqd.tmpl(sTemplateID,obj)).appendTo($TBody);
+				var $Tr = $(tmpl(sTemplateID,obj)).appendTo($TBody);
 				$Tr.find(':input').on('change',handleChange);
 				$Tr.find('.dashicons-arrow-up').on('click',tablerowMove);
 				$Tr.find('.dashicons-arrow-down').on('click',tablerowMove);

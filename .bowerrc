@@ -1,11 +1,14 @@
 {
     "directory": "src/vendor"
     ,"overrides": {
-		"devicejs": {
-			"main": ["lib/device.min.js"]
-		}
-		,"geoPosition": {
-			"main": ["js/geoPosition.js"]
+		"iddqd": {
+			"main":[
+				"src/iddqd.js"
+				,"src/iddqd.internal.js"
+				,"src/iddqd.internal.native.array.js"
+				,"src/iddqd.internal.native.string.js"
+				,"src/iddqd.utils.tmpl.js"
+			]
 		}
 	}
 }
