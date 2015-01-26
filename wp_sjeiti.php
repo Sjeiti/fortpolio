@@ -365,6 +365,7 @@ if (!class_exists('WPSjeiti')) {
 			if ($args&&is_array($args)) extract($args);
 			$located = $this->locateTemplate($template_name,$template_path,$default_path);
 			if (!file_exists($located)) {
+				dump($template_path);
 				dump($located);
 				//_doing_it_wrong(__FUNCTION__,sprintf('<code>%s</code> does not exist.',$located),'2.1');
 				return;

@@ -66,12 +66,6 @@ function handlePluginsLoaded() {
 	// taxonomies
 	add_action('pre_get_posts',			array(&$this,'add_cpt_to_query') );
 	//
-	//
-	// templates // todo: get this working (or maybe: post-formats)
-	// see: http://wordpress.stackexchange.com/questions/55763/is-it-possible-to-define-a-template-for-a-custom-post-type-within-a-plugin-indep
-	// add_filter('single_template', array(&$this,'singeTemplate'));
-	//
-	//
 	// see: http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types
 	add_filter( 'manage_edit-fortpolio_columns', array(&$this,'editCptColumns') ) ;
 	add_action( 'manage_fortpolio_posts_custom_column', array(&$this,'manageCptColumns'), 10, 2 );
@@ -79,8 +73,7 @@ function handlePluginsLoaded() {
 	//add_action('bulk_edit_custom_box', array(&$this,'quickEditCustomBox'), 10, 4); // goes wrong... tags seem to be js added
 	add_action('quick_edit_custom_box', array(&$this,'quickEditCustomBox'), 10, 2);
 	add_action('save_post', array(&$this,'quickedit_save'), 10, 3);
-//	add_action('edit_post', array(&$this,'quickedit_save'), 10, 3);
-	//
+	//add_action('edit_post', array(&$this,'quickedit_save'), 10, 3);
 	//
 	// shortcodes
 	$this->addShortCodes();
@@ -92,8 +85,7 @@ function handlePluginsLoaded() {
  * Register cpt.
  */
 function init() {
-	//
-	//if (!did_action('wp_enqueue_media')) wp_enqueue_media(); // todo: should be on but causes js error: Uncaught TypeError: Cannot read property 'id' of undefined
+	if (!did_action('wp_enqueue_media')) wp_enqueue_media();
 	//
 	// register sizes for thumb, image and poster
 	foreach (array('thumb','image','poster') as $s) {
@@ -147,7 +139,7 @@ function registerCPTFortpolio() {
 			,'thumbnail' // (featured image, current theme must also support post-thumbnails)
 			,'excerpt'
 			,'trackbacks'
-			//,'custom-fields'
+			,'custom-fields'
 			,'comments' // (also will see comment count balloon on edit screen)
 			,'revisions' // (will store revisions)
 			,'page-attributes' // (menu order, hierarchical must be true to show Parent option)
@@ -155,9 +147,6 @@ function registerCPTFortpolio() {
 		)
 		,'taxonomies' => array('category', 'post_tag' )
 	);
-	//
-//	if (WP_FPL_DEBUG) $aPostType['supports'][] = 'custom-fields';
-	$aPostType['supports'][] = 'custom-fields';//todo:rem
 	if (count($aTaxonomies)>0) { // taxonomies
 		$aPostType['taxonomies'] = array('post_tag');
 		foreach ($aTaxonomies as $object) {
@@ -197,8 +186,7 @@ function registerCPTFortpolio() {
  * Add scripts and styles.
  */
 function enqueScripts() {
-	// todo: isAdmin
-	if (isPage('fortpolio')||isSettings('fortpolio')) {
+	if (is_admin()&&(isPage('fortpolio')||isSettings('fortpolio'))) {
 		wp_enqueue_style('thickbox');
 		wp_enqueue_style('fortpolio_admin', $this->sPluginRootUri.'style/screen_admin.css');
 		//
@@ -233,6 +221,7 @@ function add_cpt_to_query($query) {
  * Make textarea heigth a bit smaller in admin cpt
  */
 function contentTextareaHeight() {
+	// todo: add generic admin-style.css
 	if (isPage('fortpolio')) echo '<style type="text/css">#content{ height:100px; }</style>';
 }
 
@@ -250,39 +239,18 @@ function mediaView( $object, $box ) {
 	$this->addNonce('media');
 	//
 	// inject html snippets into js object
-	$sTr = $this->returnRequire($this->sAdminTemplates.'mediaTableRow.php');
+	$sTr = $this->getTemplate('mediaTableRow.php',array(),'',$this->sAdminTemplates);
 	echo '<script>fortpolio.admin.post.setTableRow(\''.preg_replace(array('/\s{2,}/','/[\t\n]/'),'',$sTr).'\')</script>';
 	//
-	// add media buttons
-	$aMedia = array(
-		 'image'=>__('Add an image','fortpolio')
-		,'video'=>__('Add a video','fortpolio')
-		,'audio'=>__('Add audio','fortpolio')
-		,'file' =>__('Add file','fortpolio')
-	);
-	$oMedia = $this->getObject('fortpolio_mediaTypes');
-	// todo: rem media options in settings
-	?><!--nav id="fortpolio-add-media-menu"><?php $i=0; foreach ($aMedia as $type=>$medium) {
-		$sUri = esc_url( str_replace('&type=','&target=fortpolio&tab=library&type=',get_upload_iframe_src($type)) ); // extra vars must be inserted to work correctly (not appended)
-		echo '<a title="'.$medium.'" href="'.$sUri.'" class="thickbox '.$type.'" data-type="'.$type.'"'.(!isset($oMedia['value'][$i])?' style="display:none;"':'').'>'.$medium.'</a>';
-		$i++;
-	} ?></nav--><?php
-	?><nav id="fortpolio-add-media-menu">
-		<a href="#" class="button insert-media add_media" data-editor="content" title="Add Media"><span class="wp-media-buttons-icon"></span> Add Media</a>
-	</nav><?php
-	// input field
+	// media
 	$sValue = get_post_meta($post->ID,$this->sMedia, true );
 	if ($sValue=='') $sValue = '[]';
-	$sInputName = $this->getInputName('media');
-	echo '<input type="hidden" value="'.str_replace('"','&quot;',$sValue).'" name="'.$sInputName.'" id="'.$sInputName.'" />';
-	// show json data
-	if (WP_FPL_DEBUG) echo '<div id="jsonData">'.$sValue.'</div>';
-	// media list
 	$this->template('mediaTable.php',array(
 		'json'=>json_decode($sValue)
 		,'tr'=>$sTr
-		,'this'=>$this
-	),$this->sAdminTemplates);
+		,'value'=>$sValue
+		,'inputName'=>$this->getInputName('media')
+	),'',$this->sAdminTemplates);
 }
 function mediaSendToEditor($html, $attachment_id, $attachment) {
 	if (isset($_POST['_wp_http_referer'])) {
@@ -320,17 +288,14 @@ function metaFieldsView( $object, $box ) {
 	$sMetameta = $this->getValue('fortpolio_metameta');
 	$aMetameta = json_decode($sMetameta);
 	if (is_array($aMetameta)) {
-		//echo print_r($aMetameta,true);
-		foreach ($aMetameta as $meta) {//todo:dry #1234
+		foreach ($aMetameta as $meta) {
 			$sMetaId = $this->getMetaName($meta->key);
-			$sLabel = $meta->label;
-			$sType = $meta->type;
-			$sValue = get_post_meta($object->ID,$sMetaId, true );
-			echo '<p><label for="'.$sMetaId.'">'.$sLabel.FormElement::getElement(array(
-				'id'=>$sMetaId
-				,'type'=>$sType
-				,'value'=>$sValue
-			)).'</label></p>';
+			$this->template('metaField.php',array(
+				'metaId'=>$sMetaId
+				,'label'=>$meta->label
+				,'type'=>$meta->type
+				,'value'=>get_post_meta($object->ID,$sMetaId, true )
+			),'',$this->sAdminTemplates);
 		}
 	}
 }
@@ -384,21 +349,14 @@ public function quickEditCustomBox($col, $type){
 		$aMetameta = json_decode($sMetameta);
 		foreach ($aMetameta as $meta) {
 			if ($meta->key==$col&&$meta->inquick) {
-				//todo:dry #1234
 				$sMetaId = $this->getMetaName($meta->key);
-				$sLabel = $meta->label;
-				$sType = $meta->type;
-				//
 				echo '<fieldset class="inline-edit-col-right asdf"><div class="inline-edit-col">';
-				//dump($meta);
-				echo '<label for="'.$sMetaId.'" class="fortpolio-meta">';
-				echo FormElement::getElement(array(
-					'id'=>$sMetaId
-					,'type'=>$sType
-					,'value'=>''
-				));
-				echo $sLabel;
-				echo '</label>';
+				$this->template('metaField.php',array(
+					'metaId'=>$sMetaId
+					,'label'=>$meta->label
+					,'type'=>$meta->type
+					,'value'=>''//todo:get_post_meta($object->ID,$sMetaId, true )
+				),'',$this->sAdminTemplates);
 				echo '</div></fieldset>';
 			}
 		}
@@ -464,9 +422,9 @@ function fortpolio($atts) {
 	),$atts));
 	//
 	// booleans should be booleans
-	$thumb = $thumb==='true';
-	$excerpt = $excerpt==='true';
-	$media = $media==='true';
+	$thumb = $thumb==='true'||$thumb===true;
+	$excerpt = $excerpt==='true'||$excerpt===true;
+	$media = $media==='true'||$media===true;
 	//
 	$bItem = $item!='';
 	$bItems = preg_match('/[,]/',$item);
@@ -477,15 +435,6 @@ function fortpolio($atts) {
 		,'post_status' => 'publish'
 		,'posts_per_page' => $bList?-1:1
 	);
-	//
-	//<div id="primary" class="content-area">
-	//	<main id="main" class="site-main" role="main">
-	//		<header><h1 class="page-title screen-reader-text">Blog</h1></header>
-	//		<article id="post-99" class="post-99 post type-post status-publish format-standard hentry category-uncategorized">
-	//		</article>
-	//	</main>
-	//</div>
-	//
 	// non extracted parameters presumed taxonomies or meta values
 	if (is_array($atts)) {
 		foreach ($atts as $k=>$v) {
@@ -527,8 +476,7 @@ function fortpolio($atts) {
 		if ($bItem) $aQuery['name'] = $item;
 		$aPosts = get_posts($aQuery);
 	}
-	//
-	return 'foo'.$callback($aPosts,$thumb,$excerpt,$media);
+	return $callback($aPosts,$thumb,$excerpt,$media);
 }
 
 /**
@@ -544,16 +492,14 @@ function handleFortpolioHookResult($posts,$thumb,$excerpt,$media) {
 	if ($posts) {
 		if (count($posts)>1) {
 			$sReturn = $this->getTemplate('list.php',array(
-				'this'=>$this
-				,'posts'=>$posts
+				'posts'=>$posts
 				,'thumb'=>$thumb
 				,'excerpt'=>$excerpt
 				,'media'=>$media
 			));
 		} else {
 			$sReturn = $this->getTemplate('item.php',array(
-				'this'=>$this
-				,'post'=>$posts[0]
+				'post'=>$posts[0]
 				,'thumb'=>$thumb
 				,'excerpt'=>$excerpt
 				,'media'=>$media
@@ -574,12 +520,11 @@ function handleFortpolioHookResult($posts,$thumb,$excerpt,$media) {
  */
 function getFortpolioItem($oPost,$thumb=false,$excerpt=true,$media=false) {
 	return $this->getTemplate('item.php',array(
-		'this'=>$this
-		,'post'=>$oPost
+		'post'=>$oPost
 		,'thumb'=>$thumb
 		,'excerpt'=>$excerpt
 		,'media'=>$media
-	));;
+	));
 }
 //
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -618,7 +563,7 @@ function settingsPage() {
 		'pluginName'=>$this->sPluginName
 		,'errors'=>$this->getErrors()
 		,'pluginId'=>$this->sPluginId
-	),$this->sAdminTemplates);
+	),'',$this->sAdminTemplates);
 }
 //
 // override::getFormdata
@@ -718,24 +663,9 @@ public function getMediaHtml($postId) {
 	$aMedia = json_decode($sMedia);
 	$sHtml = '';
 	if ($aMedia) {
-		$sHtml .= '<ul class="fortpolio-media">';
-		foreach($aMedia as $oMedium) {
-			//dump($oMedium);
-			//$bIsWp = $oMedium->type=='video'&&$oMedium->type=='image'&&$oMedium->type=='audio'&&$oMedium->type=='file';
-			$oMediumData = get_post($oMedium->id);
-			$bIsWp = isset($oMediumData);
-			$sTitle = $bIsWp?$oMediumData->post_title:$oMedium->title;
-			$sContent = $bIsWp?$oMediumData->post_content:'';
-			//
-			$sHtml .= '<li id="item_'.$oMedium->id.'">';
-			$sHtml .= '<div class="item-content">';
-			$sHtml .= '<h4>'.$sTitle.'</h4>';
-			$sHtml .= $sContent;
-			$sHtml .= '</div>';
-			$sHtml .= $this->getMediumHtml($oMedium);
-			$sHtml .= '</li>';
-		}
-		$sHtml .= '</ul>';
+		$sHtml .= $this->getTemplate('listMedia.php',array(
+			'media'=>$aMedia
+		));
 	}
 	return $sHtml;
 }
@@ -744,24 +674,10 @@ public function getMediaJson($postId) {
 }
 public function getMediumHtml($medium) {
 	$aData = $this->getMediumData($medium);
-	$sReturn = '';
-	switch ($aData['type']) {
-		case 'vimeo':
-			$sReturn = '<a title="'.$medium->title.'" href="http://vimeo.com/'.$medium->id.'" target="vimeo'.$medium->id.'"><img alt="'.$medium->title.'" src="'.$medium->thumb.'" /></a>';
-		break;
-		case 'image':
-			$sReturn = '<a title="'.$aData['title'].'" href="'.$aData['uriMedium'].'"><img alt="'.$aData['title'].'" src="'.$aData['uriThumb'].'" /></a>';
-		break; // todo: add href and custom thumb
-		case 'video':
-			$sReturn = '<video'.(isset($aData['uriPoster'])?' poster="'.$aData['uriPoster'].'"':'').'>
-				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
-				'.(isset($aData['uriMp4'])?'<source type="video/mp4" src="'.$aData['uriMp4'].'"></source>':'').'
-				'.(isset($aData['uriOgg'])?'<source type="video/ogg" src="'.$aData['uriOgg'].'"></source>':'').'
-			</video>';
-		break;
-		case 'file':  $sReturn = '<a href="'.$aData['uri'].'" target="_blank">'.array_pop(explode('/',$aData['uri'])).'</a>'; break;
-	}
-	return $sReturn;
+	return $this->getTemplate('medium-'.$aData['type'].'.php',array(
+		'medium'=>$medium
+		,'data'=>$aData
+	));
 }
 public function getMediumData($medium) {
 	$id = $medium->id;
@@ -770,7 +686,6 @@ public function getMediumData($medium) {
 		'id'=>$id
 		,'type'=>$sType
 		,'title'=>html_entity_decode(get_the_title($id),ENT_COMPAT,'UTF-8')
-//				,'title'=>get_the_title($id)
 		,'content'=>get_the_content($id)
 		,'uri'=>wp_get_attachment_url($id)
 	);
