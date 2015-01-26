@@ -7,5 +7,4 @@ echo '<h3>'.sprintf( $sPermalink, apply_filters('the_title',$post->post_title) )
 if ($excerpt)	echo '<p>'.apply_filters('the_content',$post->post_excerpt).'</p>';
 else			echo '<p>'.apply_filters('the_content',$post->post_content).'</p>';
 if ($media)		echo sprintf( $sPermalink, $this->getMediaHtml($post->ID) );
-if ($media)		echo 'asdf';
-echo '<a title="'.__('Read more','fortpolio').'" class="read-more" href="'.get_permalink($post->ID).'">'.__('Read more','fortpolio').'</a>';
+echo '<a title="'.__('Read 	more','fortpolio').'" class="read-more" href="'.get_permalink($post->ID).'">'.__('Read more','fortpolio').'</a>';

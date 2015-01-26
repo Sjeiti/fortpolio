@@ -34,8 +34,7 @@ protected $sMeta =  'fortpolio-meta';
 function __construct() {
 	parent::__construct();
 	$this->aTemplates = array(
-		'tmpl/archive-fortpolio.php' => 'Portfolio archive'
-		,'tmpl/page-fortpolio.php' => 'Portfolio page'
+		'tmpl/page-fortpolio.php' => 'Portfolio archive'
 	);
 }
 
@@ -75,9 +74,20 @@ function handlePluginsLoaded() {
 	add_action('save_post', array(&$this,'quickedit_save'), 10, 3);
 	//add_action('edit_post', array(&$this,'quickedit_save'), 10, 3);
 	//
+	add_filter( 'single_template', array(&$this,'filterSingleTemplate') );
+	//
 	// shortcodes
 	$this->addShortCodes();
 }
+
+	function filterSingleTemplate($single_template) {
+		global $post;
+		if ($post->post_type == 'fortpolio') {
+		  $single_template = $this->sPluginRootDir.'/tmpl/single-fortpolio.php';
+//		  $single_template = dirname( __FILE__ ) . '/post-type-template.php';
+		}
+		return $single_template;
+	}
 
 /**
  * Initialise.
@@ -524,6 +534,11 @@ function getFortpolioItem($oPost,$thumb=false,$excerpt=true,$media=false) {
 		,'thumb'=>$thumb
 		,'excerpt'=>$excerpt
 		,'media'=>$media
+	));
+}
+function getFortpolioContent($post) {
+	return $this->getTemplate('content-fortpolio.php',array(
+		'post'=>$post
 	));
 }
 //

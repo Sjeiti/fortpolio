@@ -1,18 +1,27 @@
 <?php
 /* Template Name: Fortpolio archive */
 get_header();
-?><div id="primary" class="content-area">
-	<main id="main" class="site-main" role="main">
-		<article class="page type-page status-publish hentry">
-			<header class="entry-header"><h1 class="entry-title"><?php the_title() ?></h1></header>
-			<section id="container" class="portfolio entry-content">
-			<?php
-				echo $wp_fortpolio->fortpolio(array(
-					'media' => true
-				));
-			?>
-			</section>
-		</article>
-	</main>
-</div><?php
+?><section id="primary" class="content-area">
+	<main id="main" class="site-main" role="main"><?php
+		if ( have_posts() ) :
+			?><header class="page-header"><?php
+				the_archive_title( '<h1 class="page-title">', '</h1>' );
+				the_archive_description( '<div class="taxonomy-description">', '</div>' );
+			?></header><?php
+			while ( have_posts() ) : the_post();
+				echo $wp_fortpolio->getFortpolioContent($post);
+			endwhile;
+
+			// Previous/next page navigation.
+			the_posts_pagination( array(
+				'prev_text'          => __( 'Previous page', 'twentyfifteen' ),
+				'next_text'          => __( 'Next page', 'twentyfifteen' ),
+				'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'twentyfifteen' ) . ' </span>',
+			) );
+
+		else :
+			get_template_part( 'content', 'none' );
+		endif;
+	?></main>
+</section><?php
 get_footer();

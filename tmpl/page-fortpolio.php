@@ -1,22 +1,18 @@
 <?php
-/*
-Template Name: Fortpolio page
-*/
-?><?php
-get_header(); ?>
-
-		<div id="primary">
-			<div id="content" role="main">
-
-				<?php while ( have_posts() ) : the_post(); ?>
-
-					<?php get_template_part( 'content', 'page' ); ?>
-
-					<?php comments_template( '', true ); ?>
-
-				<?php endwhile; // end of the loop. ?>
-
-			</div><!-- #content -->
-		</div><!-- #primary -->
-
-<?php get_footer(); ?>
+/* Template Name: Fortpolio archive */
+get_header();
+?><div id="primary" class="content-area">
+	<main id="main" class="site-main" role="main">
+		<article class="page type-page status-publish hentry">
+			<header class="entry-header"><h1 class="entry-title"><?php the_title() ?></h1></header>
+			<section id="container" class="portfolio entry-content">
+			<?php
+				echo $wp_fortpolio->fortpolio(array(
+//					'media' => true
+				));
+			?>
+			</section>
+		</article>
+	</main>
+</div><?php
+get_footer();

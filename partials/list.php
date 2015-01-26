@@ -2,8 +2,7 @@
 	foreach ($posts as $oPost) {
 		?><li class="fortpolio-excerpt"><?php
 			$this->template('item.php',array(
-				'this'=>$this
-				,'post'=>$oPost
+				'post'=>$oPost
 				,'thumb'=>$thumb
 				,'excerpt'=>$excerpt
 				,'media'=>$media
