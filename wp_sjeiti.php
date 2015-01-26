@@ -336,15 +336,17 @@ if (!class_exists('WPSjeiti')) {
 		 */
 		public function view_project_template($template) {
 			global $post;
-			if (!isset($this->aTemplates[get_post_meta($post->ID,'_wp_page_template',true)])) {
-				return $template;
-			}
-			$file = plugin_dir_path(__FILE__).get_post_meta($post->ID,'_wp_page_template',true);
-			if (file_exists($file)) {
-				return $file;
-			} else {
-				// make warning for missing template
-				echo $file;
+			if (isset($post)) {
+				if (!isset($this->aTemplates[get_post_meta($post->ID,'_wp_page_template',true)])) {
+					return $template;
+				}
+				$file = plugin_dir_path(__FILE__).get_post_meta($post->ID,'_wp_page_template',true);
+				if (file_exists($file)) {
+					return $file;
+				} else {
+					// make warning for missing template
+					echo $file;
+				}
 			}
 			return $template;
 		}
