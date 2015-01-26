@@ -20,7 +20,7 @@ protected $sPluginHomeUri = 'http://fortpolio.sjeiti.com/';
 protected $sPluginWpUri = 'http://wordpress.org/extend/plugins/fortpolio/';
 protected $sPluginFlattrUri = 'http://flattr.com/thing/99947/Fortpolio';
 protected $sConstantId = 'FPL';
-protected $sVersion = '1.1.0';
+protected $sVersion = '1.2.0';
 
 protected $bOverrideMediaButtons = false;
 
