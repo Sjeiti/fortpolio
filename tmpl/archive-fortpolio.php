@@ -5,10 +5,9 @@ get_header();
 
 echo '<section id="container" class="portfolio">';
 
-?>assdffoos<?php
-
-
-echo $wp_fortpolio->fortpolio(array());
+echo $wp_fortpolio->fortpolio(array(
+	'media' => true
+));
 
 //	if ( have_posts() ) :
 //		while ( have_posts() ) : the_post();

@@ -33,8 +33,6 @@ protected $sMeta =  'fortpolio-meta';
  */
 function __construct() {
 	parent::__construct();
-	$this->sPluginRootUri = plugin_dir_url(__FILE__);
-	$this->sPluginRootDir = plugin_dir_path(__FILE__);
 	$this->aTemplates = array(
 		'tmpl/archive-fortpolio.php' => 'Portfolio archive'
 		,'tmpl/page-fortpolio.php' => 'Portfolio page'
@@ -252,7 +250,7 @@ function mediaView( $object, $box ) {
 	$this->addNonce('media');
 	//
 	// inject html snippets into js object
-	$sTr = $this->returnRequire('partials/mediaTableRow.php');
+	$sTr = $this->returnRequire($this->sAdminTemplates.'mediaTableRow.php');
 	echo '<script>fortpolio.admin.post.setTableRow(\''.preg_replace(array('/\s{2,}/','/[\t\n]/'),'',$sTr).'\')</script>';
 	//
 	// add media buttons
@@ -280,11 +278,11 @@ function mediaView( $object, $box ) {
 	// show json data
 	if (WP_FPL_DEBUG) echo '<div id="jsonData">'.$sValue.'</div>';
 	// media list
-	$this->getTemplate('mediaTable.php',array(
+	$this->template('mediaTable.php',array(
 		'json'=>json_decode($sValue)
 		,'tr'=>$sTr
 		,'this'=>$this
-	));
+	),$this->sAdminTemplates);
 }
 function mediaSendToEditor($html, $attachment_id, $attachment) {
 	if (isset($_POST['_wp_http_referer'])) {
@@ -480,6 +478,14 @@ function fortpolio($atts) {
 		,'posts_per_page' => $bList?-1:1
 	);
 	//
+	//<div id="primary" class="content-area">
+	//	<main id="main" class="site-main" role="main">
+	//		<header><h1 class="page-title screen-reader-text">Blog</h1></header>
+	//		<article id="post-99" class="post-99 post type-post status-publish format-standard hentry category-uncategorized">
+	//		</article>
+	//	</main>
+	//</div>
+	//
 	// non extracted parameters presumed taxonomies or meta values
 	if (is_array($atts)) {
 		foreach ($atts as $k=>$v) {
@@ -522,7 +528,7 @@ function fortpolio($atts) {
 		$aPosts = get_posts($aQuery);
 	}
 	//
-	return $callback($aPosts,$thumb,$excerpt,$media);
+	return 'foo'.$callback($aPosts,$thumb,$excerpt,$media);
 }
 
 /**
@@ -536,13 +542,24 @@ function fortpolio($atts) {
 function handleFortpolioHookResult($posts,$thumb,$excerpt,$media) {
 	$sReturn = '';
 	if ($posts) {
-		$bList = count($posts)>1;
-		$sWrap = $bList?'li':'div';
-		if ($bList) $sReturn .= '<ul class="fortpolio-list">';
-		foreach ($posts as $oPost) {
-			$sReturn .= '<'.$sWrap.' class="fortpolio-excerpt">'.$this->getFortpolioItem($oPost,$thumb,$excerpt,$media).'</'.$sWrap.'>';
+		if (count($posts)>1) {
+			$sReturn = $this->getTemplate('list.php',array(
+				'this'=>$this
+				,'posts'=>$posts
+				,'thumb'=>$thumb
+				,'excerpt'=>$excerpt
+				,'media'=>$media
+			));
+		} else {
+			$sReturn = $this->getTemplate('item.php',array(
+				'this'=>$this
+				,'post'=>$posts[0]
+				,'thumb'=>$thumb
+				,'excerpt'=>$excerpt
+				,'media'=>$media
+			));
+			$sReturn .= $this->getFortpolioItem($posts[0],$thumb,$excerpt,$media);
 		}
-		if ($bList) $sReturn .= '</ul>';
 	}
 	return $sReturn;
 }
@@ -556,23 +573,13 @@ function handleFortpolioHookResult($posts,$thumb,$excerpt,$media) {
  * @return string
  */
 function getFortpolioItem($oPost,$thumb=false,$excerpt=true,$media=false) {
-	$sReturn  = '';
-	$sPermalink = '<a title="'.__('Read more','fortpolio').'" class="thumb" href="'.get_permalink($oPost->ID).'">%s</a>';
-	sprintf( $sPermalink, preg_replace('/\s(width|height)=\"[0-9]*\"/','',get_the_post_thumbnail($oPost->ID,'thumbnail')) );
-	if ($thumb) {
-		$sReturn .= sprintf( $sPermalink, preg_replace('/\s(width|height)=\"[0-9]*\"/','',get_the_post_thumbnail($oPost->ID,'thumbnail')) );
-//		$sReturn .= '<a title="'.__('Read more','fortpolio').'" class="thumb" href="'.get_permalink($oPost->ID).'">'.preg_replace('/\s(width|height)=\"[0-9]*\"/','',get_the_post_thumbnail($oPost->ID,'thumbnail')).'</a>';
-//		$sReturn .= preg_replace('/\s(width|height)=\"[0-9]*\"/','',get_the_post_thumbnail($oPost->ID,'thumbnail'));
-	}
-	$sReturn .= '<a title="'.__('Edit item','fortpolio').'" class="post-edit-link" href="'.get_edit_post_link($oPost->ID).'">'.__('Edit item','fortpolio').'</a>';
-	$sReturn .= '<h3>'.sprintf( $sPermalink, apply_filters('the_title',$oPost->post_title) ).'</h3>';
-//	$sReturn .= '<h3>'.apply_filters('the_title',$oPost->post_title).'</h3>';
-	if ($excerpt)	$sReturn .= '<p>'.apply_filters('the_content',$oPost->post_excerpt).'</p>';
-	else			$sReturn .= '<p>'.apply_filters('the_content',$oPost->post_content).'</p>';
-	if ($media)		$sReturn .= sprintf( $sPermalink, $this->getMediaHtml($oPost->ID) );
-//	if ($media)		$sReturn .= $this->getMediaHtml($oPost->ID);
-	$sReturn .= '<a title="'.__('Read more','fortpolio').'" class="read-more" href="'.get_permalink($oPost->ID).'">'.__('Read more','fortpolio').'</a>';
-	return $sReturn;
+	return $this->getTemplate('item.php',array(
+		'this'=>$this
+		,'post'=>$oPost
+		,'thumb'=>$thumb
+		,'excerpt'=>$excerpt
+		,'media'=>$media
+	));;
 }
 //
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -607,51 +614,11 @@ function initSettings() {
 	add_options_page(__('Fortpolio options', 'fortpolio'), __('Fortpolio', 'fortpolio'), 'manage_options', 'fortpolio', array(&$this,'settingsPage'));
 }
 function settingsPage() {
-	$this->getTemplate('admin-form.php',array(
+	$this->template('admin-form.php',array(
 		'pluginName'=>$this->sPluginName
 		,'errors'=>$this->getErrors()
 		,'pluginId'=>$this->sPluginId
-//		,'pluginId'=>FPL_SETTINGS
-//		,'pluginId'=>$this->sPluginId
-//	settings_fields(FPL_SETTINGS);
-//	do_settings_sections(FPL_PAGE);
-	));
-	return;
-	?><style>
-		/*.postbox .inside {padding: 0 15px 5px 15px;}
-		.postbox .inside form {text-align:center;margin:5px 0;}
-		.wp-sfb-settings .main h3 {margin-top:30px;}
-		.wp-sfb-settings .main p {margin-left:10px;}
-		.wp-sfb-settings .main ul.nolist {margin-left:10px;}*/
-	</style><?php
-	//
-	echo T.'<div class="wrap wp-'.$this->sPluginId.'-settings">';
-	echo T.T.'<div id="icon-options-general" class="icon32"><br/></div>';
-
-	echo T.T.'<h2>'.__('Fortpolio options','fortpolio').'</h2>';
-
-	// debug alerts
-	$this->showErrors();
-
-	// start form
-	echo T.T.'<div class="postbox-container main" style="width:65%;"><div class="metabox-holder"><div class="meta-box-sortables ui-sortable">';
-
-	echo T.T.'<p style="max-width:700px;">'.__('_explainFortpolio',$this->sPluginId).'</p>';
-
-
-	echo T.T.T.'<form method="post" action="options.php">';
-	settings_fields(FPL_SETTINGS);
-	do_settings_sections(FPL_PAGE);
-	echo T.T.T.T.'<p><br/><input type="submit" name="submit" class="button-primary" value="'.__('Save changes','fortpolio').'" /></p>';
-	echo T.T.T.'</form>';
-	echo T.T.'</div></div></div>';
-
-	// side
-	echo T.T.'<div class="postbox-container side" style="width:20%;"><div class="metabox-holder"><div class="meta-box-sortables ui-sortable">';
-	$this->plugin_like();//'Fortpolio','http://flattr.com/thing/99947/Fortpolio');
-	echo T.T.'</div></div></div>';
-
-	echo T.'</div>';
+	),$this->sAdminTemplates);
 }
 //
 // override::getFormdata
@@ -746,8 +713,7 @@ public function getMediaData($postId) {
 	if ($aMedia) foreach($aMedia as $oMedium) $aData[] = $this->getMediumData($oMedium);
 	return $aData;
 }
-public function getMediaHtml($postId) { // todo: refactor with getMediaData
-//	dump('getMediaHtml');
+public function getMediaHtml($postId) {
 	$sMedia = get_post_meta($postId,'fortpolio-media', true );
 	$aMedia = json_decode($sMedia);
 	$sHtml = '';
@@ -776,7 +742,27 @@ public function getMediaHtml($postId) { // todo: refactor with getMediaData
 public function getMediaJson($postId) {
 	return json_encode($this->getMediaData($postId));
 }
-
+public function getMediumHtml($medium) {
+	$aData = $this->getMediumData($medium);
+	$sReturn = '';
+	switch ($aData['type']) {
+		case 'vimeo':
+			$sReturn = '<a title="'.$medium->title.'" href="http://vimeo.com/'.$medium->id.'" target="vimeo'.$medium->id.'"><img alt="'.$medium->title.'" src="'.$medium->thumb.'" /></a>';
+		break;
+		case 'image':
+			$sReturn = '<a title="'.$aData['title'].'" href="'.$aData['uriMedium'].'"><img alt="'.$aData['title'].'" src="'.$aData['uriThumb'].'" /></a>';
+		break; // todo: add href and custom thumb
+		case 'video':
+			$sReturn = '<video'.(isset($aData['uriPoster'])?' poster="'.$aData['uriPoster'].'"':'').'>
+				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
+				'.(isset($aData['uriMp4'])?'<source type="video/mp4" src="'.$aData['uriMp4'].'"></source>':'').'
+				'.(isset($aData['uriOgg'])?'<source type="video/ogg" src="'.$aData['uriOgg'].'"></source>':'').'
+			</video>';
+		break;
+		case 'file':  $sReturn = '<a href="'.$aData['uri'].'" target="_blank">'.array_pop(explode('/',$aData['uri'])).'</a>'; break;
+	}
+	return $sReturn;
+}
 public function getMediumData($medium) {
 	$id = $medium->id;
 	$sType = $medium->type;
@@ -811,27 +797,6 @@ public function getMediumData($medium) {
 		break;
 	}
 	return $aData;
-}
-public function getMediumHtml($medium) {
-	$aData = $this->getMediumData($medium);
-	$sReturn = '';
-	switch ($aData['type']) {
-		case 'vimeo':
-			$sReturn = '<a title="'.$medium->title.'" href="http://vimeo.com/'.$medium->id.'" target="vimeo'.$medium->id.'"><img alt="'.$medium->title.'" src="'.$medium->thumb.'" /></a>';
-		break;
-		case 'image':
-			$sReturn = '<a title="'.$aData['title'].'" href="'.$aData['uriMedium'].'"><img alt="'.$aData['title'].'" src="'.$aData['uriThumb'].'" /></a>';
-		break; // todo: add href and custom thumb
-		case 'video':
-			$sReturn = '<video'.(isset($aData['uriPoster'])?' poster="'.$aData['uriPoster'].'"':'').'>
-				'.(isset($aData['uriWebm'])?'<source type="video/webm" src="'.$aData['uriWebm'].'"></source>':'').'
-				'.(isset($aData['uriMp4'])?'<source type="video/mp4" src="'.$aData['uriMp4'].'"></source>':'').'
-				'.(isset($aData['uriOgg'])?'<source type="video/ogg" src="'.$aData['uriOgg'].'"></source>':'').'
-			</video>';
-		break;
-		case 'file':  $sReturn = '<a href="'.$aData['uri'].'" target="_blank">'.array_pop(explode('/',$aData['uri'])).'</a>'; break;
-	}
-	return $sReturn;
 }
 public function getMediumJson($medium) {
 	return json_encode($this->getMediumData($medium));

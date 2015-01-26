@@ -10,6 +10,8 @@ if (!class_exists('WPSjeiti')) {
 		protected $sPluginFlattrUri;
 		protected $sPluginRootUri;
 		protected $sPluginRootDir;
+		protected $sAdminTemplates =  '/inc/admin/';
+		protected $sClientTemplates =  '/partials/';
 		protected $sConstantId;
 		protected $sVersion;
 		protected $aForm;
@@ -29,6 +31,11 @@ if (!class_exists('WPSjeiti')) {
 			define($this->sConstantId.'_PRFX',			$this->sPluginId.'_field');
 			if (!defined('T')) define('T',				constant($sDebugName)?"\t":"");
 			if (!defined('N')) define('N',				constant($sDebugName)?"\n":"");
+			//
+			$this->sPluginRootUri = plugin_dir_url(__FILE__);
+			$this->sPluginRootDir = plugin_dir_path(__FILE__);
+			$this->sAdminTemplates = $this->sPluginRootDir.$this->sAdminTemplates;
+			$this->sClientTemplates = $this->sPluginRootDir.$this->sClientTemplates;
 			//
 			add_action('plugins_loaded',array(&$this,'handlePluginsLoaded') );
 		}
@@ -284,11 +291,11 @@ if (!class_exists('WPSjeiti')) {
 		//
 		// like plugin?
 		protected function plugin_like() {
-			$this->getTemplate('like.php',array(
+			$this->template('like.php',array(
 				'pluginName'=>$this->sPluginName
 				,'pluginUri'=>$this->sPluginWpUri
 				,'pluginVersion'=>$this->sVersion
-			));
+			),$this->sAdminTemplates);
 		}
 		//
 		// plugin_action_links
@@ -354,7 +361,7 @@ if (!class_exists('WPSjeiti')) {
 		 * @param string $default_path (default: '')
 		 * @return void
 		 */
-		protected function getTemplate($template_name,$args = array(),$template_path = '',$default_path = '') {
+		protected function template($template_name,$args = array(),$template_path = '',$default_path = '') {
 			if ($args&&is_array($args)) extract($args);
 			$located = $this->locateTemplate($template_name,$template_path,$default_path);
 			if (!file_exists($located)) {
@@ -366,6 +373,12 @@ if (!class_exists('WPSjeiti')) {
 			//do_action('woocommerce_before_template_part',$template_name,$template_path,$located,$args);
 			include($located);
 			//do_action('woocommerce_after_template_part',$template_name,$template_path,$located,$args);
+		}
+
+		protected function getTemplate($template_name,$args = array(),$template_path = '',$default_path = '') {
+			ob_start();
+			$this->template($template_name,$args,$template_path,$default_path);
+			return ob_get_clean();
 		}
 
 		/**
@@ -382,10 +395,10 @@ if (!class_exists('WPSjeiti')) {
 		 */
 		protected function locateTemplate($template_name,$template_path = '',$default_path = '') {
 			if (!$template_path) $template_path = $this->sPluginId.'/';
-			if (!$default_path) $default_path = $this->plugin_path().'/partials/';
+			if (!$default_path) $default_path = $this->sClientTemplates;
 			$template = locate_template(array(trailingslashit($template_path).$template_name,$template_name));
 			if (!$template) $template = $default_path.$template_name;
-			return apply_filters('woocommerce_locate_template',$template,$template_name,$template_path);
+			return $template;//apply_filters('woocommerce_locate_template',$template,$template_name,$template_path);
 		}
 
 		/**
