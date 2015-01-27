@@ -1,17 +1,17 @@
 <?php
-if (!class_exists('WPSjeiti')) {
-	include_once('inc/functions_base.php');
-	class WPSjeiti {
+if (!class_exists('FPL_Plugin')) {
+	include_once('functions_base.php');
+	class FPL_Plugin {
 		//
 		protected $sPluginName;
 		protected $sPluginId;
 		protected $sPluginHomeUri;
 		protected $sPluginWpUri;
-		protected $sPluginFlattrUri;
 		protected $sPluginRootUri;
 		protected $sPluginRootDir;
+		protected $sPluginDirName;
 		protected $sAdminTemplates =  '/inc/admin/';
-		protected $sClientTemplates =  '/partials/';
+		protected $sClientTemplates =  '/templates/';
 		protected $sConstantId;
 		protected $sVersion;
 		protected $aForm;
@@ -29,22 +29,14 @@ if (!class_exists('WPSjeiti')) {
 			define($this->sConstantId.'_SETTINGS',		$this->sPluginId.'_settings');
 			define($this->sConstantId.'_PAGE',			$this->sPluginId.'_page');
 			define($this->sConstantId.'_PRFX',			$this->sPluginId.'_field');
-			if (!defined('T')) define('T',				constant($sDebugName)?"\t":"");
-			if (!defined('N')) define('N',				constant($sDebugName)?"\n":"");
-			//
-			$this->sPluginRootUri = plugin_dir_url(__FILE__);
-			$this->sPluginRootDir = plugin_dir_path(__FILE__);
-			$this->sAdminTemplates = $this->sPluginRootDir.$this->sAdminTemplates;
-			$this->sClientTemplates = $this->sPluginRootDir.$this->sClientTemplates;
 			//
 			add_action('plugins_loaded',array(&$this,'handlePluginsLoaded') );
 		}
 		//
 		//
 		public function handlePluginsLoaded(){
-			//
 			// set locale
-			load_plugin_textdomain($this->sPluginId, false, dirname(plugin_basename( __FILE__ )).'/lang');
+			load_plugin_textdomain($this->sPluginId, false, $this->sPluginDirName.'/lang');
 			$this->getFormdata(true); // force form data with locale
 			//
 			$this->initTemplates();
@@ -340,7 +332,7 @@ if (!class_exists('WPSjeiti')) {
 				if (!isset($this->aTemplates[get_post_meta($post->ID,'_wp_page_template',true)])) {
 					return $template;
 				}
-				$file = plugin_dir_path(__FILE__).get_post_meta($post->ID,'_wp_page_template',true);
+				$file = $this->sPluginRootDir.get_post_meta($post->ID,'_wp_page_template',true);
 				if (file_exists($file)) {
 					return $file;
 				} else {
@@ -409,7 +401,7 @@ if (!class_exists('WPSjeiti')) {
 		 * @return string
 		 */
 		protected function plugin_path() {
-			return untrailingslashit( plugin_dir_path( __FILE__ ) );
+			return untrailingslashit( $this->sPluginRootDir );
 		}
 
 		function returnRequire($file){

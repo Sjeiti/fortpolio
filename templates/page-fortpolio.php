@@ -7,7 +7,7 @@ get_header();
 			<header class="entry-header"><h1 class="entry-title"><?php the_title() ?></h1></header>
 			<section id="container" class="portfolio entry-content">
 			<?php
-				echo $wp_fortpolio->fortpolio(array(
+				echo $fortpolio->fortpolio(array(
 //					'media' => true
 				));
 			?>

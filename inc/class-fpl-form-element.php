@@ -1,7 +1,7 @@
 <?php
-if (!class_exists('FormElement')) {
-	require_once('HTMLElement.php');
-	class FormElement extends HTMLElement {
+if (!class_exists('FPL_Form_Element')) {
+	require_once('class-fpl-html-element.php');
+	class FPL_Form_Element extends FPL_HTML_Element {
 		/**
 		 * @static
 		 * @param $data array()

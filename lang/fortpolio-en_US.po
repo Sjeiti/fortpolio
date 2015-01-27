@@ -1,0 +1,668 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: fortpolio\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-01-27 13:04+0100\n"
+"PO-Revision-Date: 2015-01-27 13:09+0100\n"
+"Last-Translator: Sjeiti <po@sjeiti.com>\n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: gettext;__;_e;_a\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.6.11\n"
+"X-Poedit-SearchPath-0: ..\n"
+"X-Poedit-SearchPathExcluded-0: ../node_modules\n"
+"X-Poedit-SearchPathExcluded-1: ../_wpsrc\n"
+"X-Poedit-SearchPathExcluded-2: ../_backup\n"
+"X-Poedit-SearchPathExcluded-3: ../src\n"
+"X-Poedit-SearchPathExcluded-4: ../temp\n"
+
+#: ../fortpolio.php:127 ../fortpolio.php:184
+#: ../wprepo/branches/build/wp_fortpolio.php:107
+#: ../wprepo/branches/build/wp_fortpolio.php:162
+#: ../wprepo/trunk/fortpolio.php:127 ../wprepo/trunk/fortpolio.php:184
+msgid "Add new "
+msgstr ""
+
+#: ../fortpolio.php:128 ../fortpolio.php:182
+#: ../wprepo/branches/build/wp_fortpolio.php:108
+#: ../wprepo/branches/build/wp_fortpolio.php:160
+#: ../wprepo/trunk/fortpolio.php:128 ../wprepo/trunk/fortpolio.php:182
+msgid "Edit "
+msgstr ""
+
+#: ../fortpolio.php:129 ../fortpolio.php:185
+#: ../wprepo/branches/build/wp_fortpolio.php:109
+#: ../wprepo/branches/build/wp_fortpolio.php:163
+#: ../wprepo/trunk/fortpolio.php:129 ../wprepo/trunk/fortpolio.php:185
+msgid "New "
+msgstr ""
+
+#: ../fortpolio.php:130 ../wprepo/branches/build/wp_fortpolio.php:110
+#: ../wprepo/trunk/fortpolio.php:130
+msgid "View "
+msgstr ""
+
+#: ../fortpolio.php:131 ../fortpolio.php:177
+#: ../wprepo/branches/build/wp_fortpolio.php:111
+#: ../wprepo/branches/build/wp_fortpolio.php:155
+#: ../wprepo/trunk/fortpolio.php:131 ../wprepo/trunk/fortpolio.php:177
+msgid "Search "
+msgstr ""
+
+#: ../fortpolio.php:132 ../wprepo/branches/build/wp_fortpolio.php:112
+#: ../wprepo/trunk/fortpolio.php:132
+msgid "Nothing found"
+msgstr ""
+
+#: ../fortpolio.php:133 ../wprepo/branches/build/wp_fortpolio.php:113
+#: ../wprepo/trunk/fortpolio.php:133
+msgid "Nothing found in Trash"
+msgstr ""
+
+#: ../fortpolio.php:173 ../wprepo/branches/build/wp_fortpolio.php:151
+#: ../wprepo/trunk/fortpolio.php:173
+msgid "/"
+msgstr ""
+
+#: ../fortpolio.php:178 ../wprepo/branches/build/wp_fortpolio.php:156
+#: ../wprepo/trunk/fortpolio.php:178
+msgid "Popular "
+msgstr ""
+
+#: ../fortpolio.php:179 ../wprepo/branches/build/wp_fortpolio.php:157
+#: ../wprepo/trunk/fortpolio.php:179
+msgid "All "
+msgstr ""
+
+#: ../fortpolio.php:180 ../fortpolio.php:181
+#: ../wprepo/branches/build/wp_fortpolio.php:158
+#: ../wprepo/branches/build/wp_fortpolio.php:159
+#: ../wprepo/trunk/fortpolio.php:180 ../wprepo/trunk/fortpolio.php:181
+msgid "Parent "
+msgstr ""
+
+#: ../fortpolio.php:183 ../wprepo/branches/build/wp_fortpolio.php:161
+#: ../wprepo/trunk/fortpolio.php:183
+msgid "Update "
+msgstr ""
+
+#: ../fortpolio.php:186 ../wprepo/branches/build/wp_fortpolio.php:164
+#: ../wprepo/trunk/fortpolio.php:186
+msgid "Separate "
+msgstr ""
+
+#: ../fortpolio.php:187 ../wprepo/branches/build/wp_fortpolio.php:165
+#: ../wprepo/trunk/fortpolio.php:187
+msgid "Add or remove "
+msgstr ""
+
+#: ../fortpolio.php:188 ../wprepo/branches/build/wp_fortpolio.php:166
+#: ../wprepo/trunk/fortpolio.php:188
+msgid "Choose from the most used "
+msgstr ""
+
+#: ../fortpolio.php:577 ../wprepo/branches/build/wp_fortpolio.php:484
+#: ../wprepo/branches/build/wp_fortpolio.php:498
+#: ../wprepo/trunk/fortpolio.php:577
+msgid "Fortpolio options"
+msgstr ""
+
+#: ../fortpolio.php:577 ../wprepo/branches/build/wp_fortpolio.php:484
+#: ../wprepo/trunk/fortpolio.php:577
+msgid "Fortpolio"
+msgstr ""
+
+#: ../fortpolio.php:593 ../wprepo/branches/build/wp_fortpolio.php:530
+#: ../wprepo/trunk/fortpolio.php:593
+msgid "Basic settings"
+msgstr ""
+
+#: ../fortpolio.php:595 ../wprepo/branches/build/wp_fortpolio.php:532
+#: ../wprepo/trunk/fortpolio.php:595
+msgid "Menu name"
+msgstr ""
+
+#: ../fortpolio.php:596 ../wprepo/branches/build/wp_fortpolio.php:533
+#: ../wprepo/trunk/fortpolio.php:596
+msgid "Item name"
+msgstr ""
+
+#: ../fortpolio.php:598 ../wprepo/branches/build/wp_fortpolio.php:535
+#: ../wprepo/trunk/fortpolio.php:598
+msgid "Media types"
+msgstr ""
+
+#: ../fortpolio.php:599 ../inc/admin/mediaTable.php:4
+#: ../wprepo/branches/build/wp_fortpolio.php:536
+#: ../wprepo/trunk/fortpolio.php:599
+#: ../wprepo/trunk/inc/admin/mediaTable.php:4
+msgid "image"
+msgstr ""
+
+#: ../fortpolio.php:600 ../inc/admin/mediaTable.php:5
+#: ../wprepo/branches/build/wp_fortpolio.php:537
+#: ../wprepo/trunk/fortpolio.php:600
+#: ../wprepo/trunk/inc/admin/mediaTable.php:5
+msgid "video"
+msgstr ""
+
+#: ../fortpolio.php:601 ../inc/admin/mediaTable.php:6
+#: ../wprepo/branches/build/wp_fortpolio.php:538
+#: ../wprepo/trunk/fortpolio.php:601
+#: ../wprepo/trunk/inc/admin/mediaTable.php:6
+msgid "audio"
+msgstr ""
+
+#: ../fortpolio.php:602 ../inc/admin/mediaTable.php:7
+#: ../wprepo/branches/build/wp_fortpolio.php:539
+#: ../wprepo/trunk/fortpolio.php:602
+#: ../wprepo/trunk/inc/admin/mediaTable.php:7
+msgid "file"
+msgstr ""
+
+#: ../fortpolio.php:605 ../wprepo/branches/build/wp_fortpolio.php:542
+#: ../wprepo/trunk/fortpolio.php:605
+msgid "Use CSS"
+msgstr ""
+
+#: ../fortpolio.php:605 ../wprepo/branches/build/wp_fortpolio.php:542
+#: ../wprepo/trunk/fortpolio.php:605
+msgid "_explainCss"
+msgstr "Adds a small CSS file to the single-fortpolio page."
+
+#: ../fortpolio.php:606 ../wprepo/trunk/fortpolio.php:606
+msgid "Use Js"
+msgstr ""
+
+#: ../fortpolio.php:606 ../wprepo/trunk/fortpolio.php:606
+msgid "_explainJs"
+msgstr "Adds a small Javascript file to the single-fortpolio page."
+
+#: ../fortpolio.php:609 ../wprepo/trunk/fortpolio.php:609
+msgid "Metameta"
+msgstr ""
+
+#: ../fortpolio.php:609 ../fortpolio.php:610 ../wprepo/trunk/fortpolio.php:609
+#: ../wprepo/trunk/fortpolio.php:610
+msgid "_explainMetameta"
+msgstr ""
+"You can add custom meta-data fields to your fortpolio item. For instance: a "
+"project you did might have a start- and an end date. This data is only "
+"visible in the admin. To use in your site you must overwrite the templates."
+
+#: ../fortpolio.php:610 ../wprepo/trunk/fortpolio.php:610
+msgid "Add field"
+msgstr ""
+
+#: ../fortpolio.php:613 ../fortpolio.php:621
+#: ../wprepo/branches/build/wp_fortpolio.php:548
+#: ../wprepo/branches/build/wp_fortpolio.php:556
+#: ../wprepo/trunk/fortpolio.php:613 ../wprepo/trunk/fortpolio.php:621
+msgid "Image size"
+msgstr ""
+
+#: ../fortpolio.php:613 ../wprepo/branches/build/wp_fortpolio.php:548
+#: ../wprepo/trunk/fortpolio.php:613
+msgid "_explainImageSize"
+msgstr ""
+"You can select your image size here, they correspond to the sizes set in "
+"your media settings. You can also provide a custom size. Note that if you "
+"should set your sizes prior to uploading your media."
+
+#: ../fortpolio.php:614 ../wprepo/branches/build/wp_fortpolio.php:549
+#: ../wprepo/trunk/fortpolio.php:614
+msgid "Thumb size"
+msgstr ""
+
+#: ../fortpolio.php:615 ../wprepo/branches/build/wp_fortpolio.php:550
+#: ../wprepo/trunk/fortpolio.php:615
+msgid "default"
+msgstr ""
+
+#: ../fortpolio.php:616 ../fortpolio.php:625 ../fortpolio.php:636
+#: ../wprepo/branches/build/wp_fortpolio.php:551
+#: ../wprepo/branches/build/wp_fortpolio.php:560
+#: ../wprepo/branches/build/wp_fortpolio.php:571
+#: ../wprepo/trunk/fortpolio.php:616 ../wprepo/trunk/fortpolio.php:625
+#: ../wprepo/trunk/fortpolio.php:636
+msgid "custom"
+msgstr ""
+
+#: ../fortpolio.php:618 ../fortpolio.php:627
+#: ../wprepo/branches/build/wp_fortpolio.php:553
+#: ../wprepo/branches/build/wp_fortpolio.php:562
+#: ../wprepo/trunk/fortpolio.php:618 ../wprepo/trunk/fortpolio.php:627
+msgid "custom width"
+msgstr ""
+
+#: ../fortpolio.php:618 ../fortpolio.php:619 ../fortpolio.php:627
+#: ../fortpolio.php:628 ../fortpolio.php:638 ../fortpolio.php:639
+#: ../wprepo/branches/build/wp_fortpolio.php:553
+#: ../wprepo/branches/build/wp_fortpolio.php:554
+#: ../wprepo/branches/build/wp_fortpolio.php:562
+#: ../wprepo/branches/build/wp_fortpolio.php:563
+#: ../wprepo/branches/build/wp_fortpolio.php:573
+#: ../wprepo/branches/build/wp_fortpolio.php:574
+#: ../wprepo/trunk/fortpolio.php:618 ../wprepo/trunk/fortpolio.php:619
+#: ../wprepo/trunk/fortpolio.php:627 ../wprepo/trunk/fortpolio.php:628
+#: ../wprepo/trunk/fortpolio.php:638 ../wprepo/trunk/fortpolio.php:639
+msgid "pixels"
+msgstr ""
+
+#: ../fortpolio.php:619 ../fortpolio.php:628
+#: ../wprepo/branches/build/wp_fortpolio.php:554
+#: ../wprepo/branches/build/wp_fortpolio.php:563
+#: ../wprepo/trunk/fortpolio.php:619 ../wprepo/trunk/fortpolio.php:628
+msgid "custom height"
+msgstr ""
+
+#: ../fortpolio.php:622 ../fortpolio.php:633
+#: ../wprepo/branches/build/wp_fortpolio.php:557
+#: ../wprepo/branches/build/wp_fortpolio.php:568
+#: ../wprepo/trunk/fortpolio.php:622 ../wprepo/trunk/fortpolio.php:633
+msgid "medium"
+msgstr ""
+
+#: ../fortpolio.php:623 ../fortpolio.php:634
+#: ../wprepo/branches/build/wp_fortpolio.php:558
+#: ../wprepo/branches/build/wp_fortpolio.php:569
+#: ../wprepo/trunk/fortpolio.php:623 ../wprepo/trunk/fortpolio.php:634
+msgid "large"
+msgstr ""
+
+#: ../fortpolio.php:624 ../fortpolio.php:635
+#: ../wprepo/branches/build/wp_fortpolio.php:559
+#: ../wprepo/branches/build/wp_fortpolio.php:570
+#: ../wprepo/trunk/fortpolio.php:624 ../wprepo/trunk/fortpolio.php:635
+msgid "original"
+msgstr ""
+
+#: ../fortpolio.php:631 ../wprepo/branches/build/wp_fortpolio.php:566
+#: ../wprepo/trunk/fortpolio.php:631
+msgid "Video poster size"
+msgstr ""
+
+#: ../fortpolio.php:631 ../wprepo/branches/build/wp_fortpolio.php:566
+#: ../wprepo/trunk/fortpolio.php:631
+msgid "_explainPosterSize"
+msgstr ""
+"The poster image is the initial video image. You can specify a specific size "
+"or choose one of the existing dimensions."
+
+#: ../fortpolio.php:632 ../wprepo/branches/build/wp_fortpolio.php:567
+#: ../wprepo/trunk/fortpolio.php:632
+msgid "Poster image size"
+msgstr ""
+
+#: ../fortpolio.php:638 ../wprepo/branches/build/wp_fortpolio.php:573
+#: ../wprepo/trunk/fortpolio.php:638
+msgid "width"
+msgstr ""
+
+#: ../fortpolio.php:639 ../wprepo/branches/build/wp_fortpolio.php:574
+#: ../wprepo/trunk/fortpolio.php:639
+msgid "height"
+msgstr ""
+
+#: ../fortpolio.php:642 ../wprepo/branches/build/wp_fortpolio.php:577
+#: ../wprepo/trunk/fortpolio.php:642
+msgid "Taxonomies"
+msgstr ""
+
+#: ../fortpolio.php:642 ../wprepo/branches/build/wp_fortpolio.php:577
+#: ../wprepo/trunk/fortpolio.php:642
+msgid "_explainTaxonomies"
+msgstr ""
+"Taxonomies are ways to file your data by. You can specify your own "
+"taxonomies here. If you don't the default 'tags' and 'categories' taxonomies "
+"will be used."
+
+#: ../fortpolio.php:643 ../wprepo/branches/build/wp_fortpolio.php:578
+#: ../wprepo/trunk/fortpolio.php:643
+msgid "Add taxonomies"
+msgstr ""
+
+#: ../fortpolio.php:643 ../wprepo/branches/build/wp_fortpolio.php:578
+#: ../wprepo/trunk/fortpolio.php:643
+msgid "_explainTaxonomy"
+msgstr ""
+"Taxonomies are ways to file your data by. You can specify your own "
+"taxonomies here. If you don't the default 'tags' and 'categories' taxonomies "
+"will be used."
+
+#: ../inc/admin/admin-form.php:3 ../wprepo/trunk/inc/admin/admin-form.php:3
+msgid "options"
+msgstr ""
+
+#: ../inc/admin/admin-form.php:10
+#: ../wprepo/branches/build/wp_fortpolio.php:506
+#: ../wprepo/trunk/inc/admin/admin-form.php:10
+msgid "_explainFortpolio"
+msgstr ""
+"Fortpolio started out as a portfolio plugin but it turned out so generic it "
+"can be used for any collection of media."
+
+#: ../inc/admin/mediaTable.php:22
+#: ../wprepo/branches/build/wp_fortpolio.php:277
+#: ../wprepo/trunk/inc/admin/mediaTable.php:22
+msgid "Type"
+msgstr ""
+
+#: ../inc/admin/mediaTable.php:23
+#: ../wprepo/branches/build/wp_fortpolio.php:278
+#: ../wprepo/trunk/inc/admin/mediaTable.php:23
+msgid "Title"
+msgstr ""
+
+#: ../inc/admin/mediaTable.php:24
+#: ../wprepo/branches/build/wp_fortpolio.php:279
+#: ../wprepo/trunk/inc/admin/mediaTable.php:24
+msgid "Medium"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:6
+#: ../wprepo/branches/build/wp_fortpolio.php:240
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:6
+msgid "Edit this item"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:6 ../templates/content-fortpolio.php:32
+#: ../wprepo/branches/build/wp_fortpolio.php:241
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:6
+#: ../wprepo/trunk/templates/content-fortpolio.php:32
+msgid "Edit"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:7
+#: ../wprepo/branches/build/wp_fortpolio.php:242
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:7
+msgid "Delete this item"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:7
+#: ../wprepo/branches/build/wp_fortpolio.php:243
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:7
+msgid "Delete"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:12
+#: ../wprepo/branches/build/wp_fortpolio.php:244
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:12
+msgid "Add or change poster image"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:12
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:12
+msgid "poster image"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:13
+#: ../wprepo/branches/build/wp_fortpolio.php:248
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:13
+msgid "Add or change mp4 video"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:13
+#: ../wprepo/branches/build/wp_fortpolio.php:249
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:13
+msgid "mp4 video"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:14
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:14
+msgid "Add or change webm video"
+msgstr ""
+
+#: ../inc/admin/mediaTableRow.php:14
+#: ../wprepo/trunk/inc/admin/mediaTableRow.php:14
+msgid "webm video"
+msgstr ""
+
+#: ../inc/class-fpl-form-element.php:200 ../inc/class-fpl-plugin.php:174
+#: ../inc/class-fpl-plugin.php:211 ../wprepo/branches/build/wp_sjeiti.php:132
+#: ../wprepo/trunk/inc/class-fpl-form-element.php:200
+#: ../wprepo/trunk/inc/class-fpl-plugin.php:174
+#: ../wprepo/trunk/inc/class-fpl-plugin.php:211
+msgid "Add value"
+msgstr ""
+
+#: ../inc/class-fpl-plugin.php:298 ../wprepo/branches/build/wp_sjeiti.php:207
+#: ../wprepo/trunk/inc/class-fpl-plugin.php:298
+msgid "Settings"
+msgstr ""
+
+#: ../templates/archive-fortpolio.php:17
+#: ../wprepo/trunk/templates/archive-fortpolio.php:17
+msgid "Previous page"
+msgstr ""
+
+#: ../templates/archive-fortpolio.php:18
+#: ../wprepo/trunk/templates/archive-fortpolio.php:18
+msgid "Next page"
+msgstr ""
+
+#: ../templates/archive-fortpolio.php:19 ../templates/content-fortpolio.php:23
+#: ../wprepo/trunk/templates/archive-fortpolio.php:19
+#: ../wprepo/trunk/templates/content-fortpolio.php:23
+msgid "Page"
+msgstr ""
+
+#: ../templates/content-fortpolio.php:12
+#: ../wprepo/trunk/templates/content-fortpolio.php:12
+#, php-format
+msgid "Continue reading %s"
+msgstr ""
+
+#: ../templates/content-fortpolio.php:19
+#: ../wprepo/trunk/templates/content-fortpolio.php:19
+msgid "Pages:"
+msgstr ""
+
+#: ../templates/item.php:2 ../templates/item.php:10
+#: ../wprepo/branches/build/wp_fortpolio.php:451
+#: ../wprepo/trunk/templates/item.php:2 ../wprepo/trunk/templates/item.php:10
+msgid "Read more"
+msgstr ""
+
+#: ../templates/item.php:5 ../wprepo/branches/build/wp_fortpolio.php:446
+#: ../wprepo/trunk/templates/item.php:5
+msgid "Edit item"
+msgstr ""
+
+#: ../templates/item.php:10 ../wprepo/trunk/templates/item.php:10
+msgid "Read \tmore"
+msgstr ""
+
+#: ../templates/single-fortpolio.php:13
+#: ../wprepo/trunk/templates/single-fortpolio.php:13
+msgid "Next"
+msgstr ""
+
+#: ../templates/single-fortpolio.php:14
+#: ../wprepo/trunk/templates/single-fortpolio.php:14
+msgid "Next post:"
+msgstr ""
+
+#: ../templates/single-fortpolio.php:16
+#: ../wprepo/trunk/templates/single-fortpolio.php:16
+msgid "Previous"
+msgstr ""
+
+#: ../templates/single-fortpolio.php:17
+#: ../wprepo/trunk/templates/single-fortpolio.php:17
+msgid "Previous post:"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:245
+msgid "Poster image"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:246
+msgid "Add or change ogg video"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:247
+msgid "ogg video"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:255
+msgid "Add an image"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:256
+msgid "Add a video"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:257
+msgid "Add audio"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:258
+msgid "Add file"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:512
+msgid "Save changes"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:541
+msgid "Add meta field"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:541
+msgid "_explainMetadata"
+msgstr ""
+"The metadata field is a short field in which you can store a key value pair "
+"per line, separated with a : sign. The data itself will have no references "
+"to anything (unlike taxonomies). The metadata field is just a quick way to "
+"list some properties."
+
+#: ../wprepo/branches/build/wp_fortpolio.php:543
+msgid "Use modal"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:543
+msgid "_explainModal"
+msgstr ""
+"Adds a minimal modal gallery (Fancybox) for your media in the single-"
+"fortpolio page."
+
+#: ../wprepo/branches/build/wp_fortpolio.php:544
+msgid "Debug mode"
+msgstr ""
+
+#: ../wprepo/branches/build/wp_fortpolio.php:544
+msgid "_explainDebug"
+msgstr "Debugging shows what data is being stored."
+
+#~ msgid "fileNotdeleted"
+#~ msgstr "File could not be deleted"
+
+#~ msgid "folderDeleted"
+#~ msgstr "Folder deleted"
+
+#~ msgid "folderNotdeleted"
+#~ msgstr "The folder could not be deleted, make sure that it is empty."
+
+#~ msgid "filenameNoext"
+#~ msgstr "You may not change extensions."
+
+#~ msgid "filenamInvalid"
+#~ msgstr "This is not a valid filename."
+
+#~ msgid "filenameNochange"
+#~ msgstr "No Changes made."
+
+#~ msgid "filenameNothing"
+#~ msgstr "You cannot rename something to nothing"
+
+#~ msgid "filenameExists"
+#~ msgstr "The filename already exists."
+
+#~ msgid "filenameSucces"
+#~ msgstr "Rename succesfull."
+
+#~ msgid "filenameFailed"
+#~ msgstr "Rename failed."
+
+#~ msgid "folderCreated"
+#~ msgstr "Folder created"
+
+#~ msgid "folderFailed"
+#~ msgstr "Unable to create folder"
+
+#~ msgid "filemoveSucces"
+#~ msgstr "Move succesfull."
+
+#~ msgid "filemoveFailed"
+#~ msgstr "Move failed."
+
+#~ msgid "fileExistsOverwrite"
+#~ msgstr "The file already exists, overwrite?"
+
+#~ msgid "fileTooBig"
+#~ msgstr ""
+#~ "The file '#1' exceeds the maximum upload size of #2. Either compress the "
+#~ "file, or upload through FTP."
+
+#~ msgid "sfb"
+#~ msgstr "SFBrowser"
+
+#~ msgid "loading"
+#~ msgstr "Loading"
+
+#~ msgid "newfolder"
+#~ msgstr "New folder"
+
+#~ msgid "upload"
+#~ msgstr "Upload"
+
+#~ msgid "cancel"
+#~ msgstr "Cancel"
+
+#~ msgid "maximize"
+#~ msgstr "Maximize"
+
+#~ msgid "name"
+#~ msgstr "Name"
+
+#~ msgid "size"
+#~ msgstr "Size"
+
+#~ msgid "dimensions"
+#~ msgstr "Dimensions"
+
+#~ msgid "choose"
+#~ msgstr "Choose"
+
+#~ msgid "duplicate"
+#~ msgstr "Duplicate"
+
+#~ msgid "dragMe"
+#~ msgstr "Drag me"
+
+#~ msgid "fileUploadCancel"
+#~ msgstr "Cancel upload"
+
+#~ msgid "fileNotselected"
+#~ msgstr "No file selected"
+
+#~ msgid "previewText"
+#~ msgstr "- loading text -"
+
+#~ msgid "previewPart"
+#~ msgstr "Shows the first #1 bytes"
+
+#~ msgid "previewContents"
+#~ msgstr "File contents:"
+
+#~ msgid "confirmDeletef"
+#~ msgstr "Delete this folder?"
+
+#~ msgid "confirmDelete"
+#~ msgstr "Delete this file?"

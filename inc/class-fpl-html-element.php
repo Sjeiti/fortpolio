@@ -1,6 +1,6 @@
 <?php
-if (!class_exists('HTMLElement')) {
-	class HTMLElement {
+if (!class_exists('FPL_HTML_Element')) {
+	class FPL_HTML_Element {
 		private static $aSelfClose = array('area','base','br','col','command','embed','hr','inpu','imgt','keygen','link','meta','param','source','track','wbr');
 		public static function get($type,$attr=array(),$html=''){
 			$hasHTML = !empty($html);
@@ -26,6 +26,6 @@ if (!class_exists('HTMLElement')) {
 }
 if (!function_exists('elm')) {
 	function elm($type,$attr=array(),$html=''){
-		return HTMLElement::get($type,$attr,$html);
+		return FPL_HTML_Element::get($type,$attr,$html);
 	}
 }

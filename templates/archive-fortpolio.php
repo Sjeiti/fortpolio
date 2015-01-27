@@ -9,7 +9,7 @@ get_header();
 				the_archive_description( '<div class="taxonomy-description">', '</div>' );
 			?></header><?php
 			while ( have_posts() ) : the_post();
-				echo $wp_fortpolio->getFortpolioContent($post);
+				echo $fortpolio->getFortpolioContent($post);
 			endwhile;
 
 			// Previous/next page navigation.

@@ -42,6 +42,11 @@ module.exports = function (grunt) {
 				,tasks: ['bower_wp']
 				,options: { spawn: false }
 			}
+			,less: {
+				files: ['src/less/*.less']
+				,tasks: ['less']
+				,options: { spawn: false }
+			}
 //			,markdown: {
 //				files: ['readme.txt']
 //				,tasks: ['markdown']
@@ -49,7 +54,7 @@ module.exports = function (grunt) {
 //			}
 			,copytosvn: {
 				files: aFiles
-				,tasks: ['copy:wprepo']
+				,tasks: ['clean:wprepo','copy:wprepo']
 				,options: { spawn: false }
 			}
 		}
@@ -98,6 +103,9 @@ module.exports = function (grunt) {
 		}
 
 		// Copy all the things!
+		,clean: {
+			wprepo: [sFolderWPRepo,'!.svn']
+		}
 		,copy: {
 			wprepo: {
 				files: [
@@ -122,11 +130,19 @@ module.exports = function (grunt) {
 			}
 		}
 
-//		,version_git: {
-//			files: {
-//				src: ['src/js/fortpolio.js','src/js/fortpolio.single.js','package.json']
-//			}
-//		}
+		// Increment versions
+		,version_git: {
+			main: {
+				options: { regex: [/\d+\.\d+\.\d+/,/sVersion\s*=\s*'(\d+\.\d+\.\d+)'/] }
+				,src: [
+					'package.json'
+					,'bower.json'
+					,'fortpolio.php'
+                    ,'src/js/fortpolio.js'
+                    ,'readme.txt'
+				]
+			}
+		}
 	});
 
 	grunt.registerTask('default',[

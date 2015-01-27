@@ -1,6 +1,6 @@
 {
   "name": "fortpolio",
-  "version": "0.0.0",
+  "version": "1.3.6",
   "authors": [
     "Ron Valstar <sjeiti@gmail.com>"
   ],
@@ -14,11 +14,10 @@
     "tests"
   ],
   "dependencies": {
-    "iddqd": "~2.4.69",
+    "iddqd": "~2.4.71",
     "zenjs": "~0.1.7"
   },
   "devDependencies": {
-    "zen": "git://github.com/Sjeiti/zen.git",
     "es5-shim": "git://github.com/es-shims/es5-shim.git#~2.3.0"
   }
 }

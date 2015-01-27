@@ -3,7 +3,7 @@
  * @namespace fortpolio
  * @name fortpolio
  * @summary A portfolio
- * @version 1.0.1
+ * @version 1.3.6
  * @author Ron Valstar (http://www.sjeiti.com/)
  * @copyright Ron Valstar <ron@ronvalstar.nl>
  */

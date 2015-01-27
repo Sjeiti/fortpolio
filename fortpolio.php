@@ -2,39 +2,42 @@
 /*
 Plugin Name:	Fortpolio
 Plugin URI:		http://fortpolio.sjeiti.com/
-Version:		1.0.0
+Version:		1.3.6
 WordPress Version: 3.0.3
 Author:			Ron Valstar
 Author URI:		http://sjeiti.com/
-Author email:	sfb@sjeiti.com
+Author email:	fpl@sjeiti.com
 Description:	A generic portfolio plugin: add multiple media files (image, video, audio, file) to a single project post-type.
 */
-if (!class_exists('WPFortpolio')) {
-require_once 'wp_sjeiti.php';
-include('inc/FormElement.php');
-class WPFortpolio extends WPSjeiti {
+if (!class_exists('Fortpolio')) {
+require_once 'inc/class-fpl-plugin.php';
+include('inc/class-fpl-form-element.php');
+final class Fortpolio extends FPL_Plugin {
 
 protected $sPluginName = 'Fortpolio';
-protected $sPluginId = 'fortpolio'; // strtolower($sPluginName);
-protected $sPluginHomeUri = 'http://fortpolio.sjeiti.com/';
+protected $sPluginId = 'fortpolio';
+protected $sPluginHomeUri = 'https://github.com/Sjeiti/fortpolio';
 protected $sPluginWpUri = 'http://wordpress.org/extend/plugins/fortpolio/';
-protected $sPluginFlattrUri = 'http://flattr.com/thing/99947/Fortpolio';
 protected $sConstantId = 'FPL';
-protected $sVersion = '1.2.0';
+protected $sVersion = '1.3.6';
 
 protected $bOverrideMediaButtons = false;
 
 protected $sMedia = 'fortpolio-media';
 protected $sMeta =  'fortpolio-meta';
 
-
 /**
  * The constructor constructing stuff.
  */
 function __construct() {
 	parent::__construct();
+	$this->sPluginRootUri = plugin_dir_url(__FILE__);
+	$this->sPluginRootDir = plugin_dir_path(__FILE__);
+	$this->sPluginDirName = dirname(plugin_basename( __FILE__ ));
+	$this->sAdminTemplates = $this->sPluginRootDir.$this->sAdminTemplates;
+	$this->sClientTemplates = $this->sPluginRootDir.$this->sClientTemplates;
 	$this->aTemplates = array(
-		'tmpl/page-fortpolio.php' => 'Portfolio archive'
+		'templates/page-fortpolio.php' => 'Portfolio archive'
 	);
 }
 
@@ -80,14 +83,13 @@ function handlePluginsLoaded() {
 	$this->addShortCodes();
 }
 
-	function filterSingleTemplate($single_template) {
-		global $post;
-		if ($post->post_type == 'fortpolio') {
-		  $single_template = $this->sPluginRootDir.'/tmpl/single-fortpolio.php';
-//		  $single_template = dirname( __FILE__ ) . '/post-type-template.php';
-		}
-		return $single_template;
+function filterSingleTemplate($single_template) {
+	global $post;
+	if ($post->post_type == 'fortpolio') {
+	  $single_template = $this->sPluginRootDir.'/templates/single-fortpolio.php';
 	}
+	return $single_template;
+}
 
 /**
  * Initialise.
@@ -140,7 +142,7 @@ function registerCPTFortpolio() {
 		,'rewrite' => array('slug' => $sFortpolioSlug)//,'with_front'	=> true
 		,'capability_type' => 'post'
 		,'hierarchical' => false
-		,'has_archive' => false//true
+		,'has_archive' => false // true
 		,'menu_position' => 4
 		,'supports' => array(
 			'title'
@@ -422,7 +424,8 @@ function addShortCodes(){
  */
 function fortpolio($atts) {
 	// prevent undefined var/function error msg
-	$item = $thumb = $excerpt = $media = $callback = null;
+	$item = $thumb = $excerpt = $media = null;
+	$callback = 'aDummyToPreventLintError';
 	extract( shortcode_atts( array(
 		 'item' => ''
 		 ,'thumb' => false
@@ -599,8 +602,6 @@ function getFormdata($force=false) {
 			,__('file','fortpolio')
 		))
 
-		,'fortpolio_debug'=>array(		'default'=>'',		'label'=>__('Debug mode','fortpolio'),	'type'=>'checkbox',	'text'=>__('_explainDebug','fortpolio'))
-
 		,'fortpolio_css'=>array(		'default'=>'on',	'label'=>__('Use CSS','fortpolio'),	'type'=>'checkbox', 'text'=>__('_explainCss','fortpolio'))
 		,'fortpolio_js'=>array(			'default'=>'on',	'label'=>__('Use Js','fortpolio'),	'type'=>'checkbox', 'text'=>__('_explainJs','fortpolio'))
 
@@ -755,6 +756,7 @@ public function getHtmlMeta($postId) { // todo: somewhatobsolete
 }
 }
 }
-global $wp_fortpolio;
-$wp_fortpolio = new WPFortpolio();
+global $fortpolio,$FPL;
+$fortpolio = new Fortpolio();
+$FPL = $fortpolio;
 ?>
